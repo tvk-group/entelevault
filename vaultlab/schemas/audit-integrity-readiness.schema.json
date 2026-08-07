@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/audit-integrity-readiness.v1.json",
+  "title": "EnteleCLOS immutable-audit integrity readiness evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "systemClass", "streamClass", "policyRevision", "streamDigest", "anchorDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.audit-integrity-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^audit_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "systemClass": { "enum": ["wallet", "exchange", "custody", "vault", "identity", "infrastructure"] },
+    "streamClass": { "enum": ["security-events", "custody-events", "ledger-events", "access-events", "release-events", "incident-events"] },
+    "policyRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "streamDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "anchorDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["appendOnlyStorageVerified", "hashChainVerified", "sequenceContinuityVerified", "trustedTimestampVerified", "clockDriftWithinPolicy", "writerIdentityAttested", "leastPrivilegeWriteAccessVerified", "readAccessMonitoringVerified", "retentionLockVerified", "independentReplicationVerified", "exportIntegrityVerified", "schemaVersionPinned", "tamperAlertRehearsed", "independentReviewComplete"],
+      "properties": {
+        "appendOnlyStorageVerified": { "type": "boolean" },
+        "hashChainVerified": { "type": "boolean" },
+        "sequenceContinuityVerified": { "type": "boolean" },
+        "trustedTimestampVerified": { "type": "boolean" },
+        "clockDriftWithinPolicy": { "type": "boolean" },
+        "writerIdentityAttested": { "type": "boolean" },
+        "leastPrivilegeWriteAccessVerified": { "type": "boolean" },
+        "readAccessMonitoringVerified": { "type": "boolean" },
+        "retentionLockVerified": { "type": "boolean" },
+        "independentReplicationVerified": { "type": "boolean" },
+        "exportIntegrityVerified": { "type": "boolean" },
+        "schemaVersionPinned": { "type": "boolean" },
+        "tamperAlertRehearsed": { "type": "boolean" },
+        "independentReviewComplete": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "sequenceGaps", "duplicateEvents", "integrityMismatches"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "sequenceGaps": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "duplicateEvents": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "integrityMismatches": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

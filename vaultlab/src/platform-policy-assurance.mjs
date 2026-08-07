@@ -61,6 +61,22 @@ import {
   REQUIRED_RESILIENCE_CONTROLS,
   RESILIENCE_READINESS_SCHEMA
 } from "./resilience-readiness.mjs";
+import {
+  evaluateSecretLeakage,
+  REQUIRED_SECRET_LEAKAGE_CONTROLS,
+  SECRET_LEAKAGE_SCHEMA
+} from "./secret-leakage-assurance.mjs";
+import {
+  AUDIT_INTEGRITY_SCHEMA,
+  evaluateAuditIntegrity,
+  REQUIRED_AUDIT_INTEGRITY_CONTROLS
+} from "./audit-integrity-readiness.mjs";
+import {
+  evaluateSecurityException,
+  SECURITY_EXCEPTION_CONTROL_FIELDS,
+  SECURITY_EXCEPTION_SCHEMA,
+  validateSecurityExceptionTransition
+} from "./security-exception-governance.mjs";
 
 const AUTHORITY_FIELDS = Object.freeze([
   "executionAuthorized",
@@ -86,7 +102,15 @@ const AUTHORITY_FIELDS = Object.freeze([
   "keyExportAuthorized",
   "restorationAuthorized",
   "failoverAuthorized",
-  "dataMutationAuthorized"
+  "dataMutationAuthorized",
+  "remediationExecutionAuthorized",
+  "credentialRevocationAuthorized",
+  "artifactDeletionAuthorized",
+  "auditWriteAuthorized",
+  "auditDeleteAuthorized",
+  "logAccessAuthorized",
+  "exceptionGrantAuthorized",
+  "policyBypassAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -538,6 +562,112 @@ function resilienceAssessment(controls) {
   };
 }
 
+function secretLeakageAssessment(controls) {
+  return {
+    schema: SECRET_LEAKAGE_SCHEMA,
+    assessmentId: "leak_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-07T00:00:00.000Z",
+    environment: "staging",
+    component: "entelevault-service",
+    scanClass: "runtime-telemetry",
+    policyRevision: "9".repeat(40),
+    rulesetDigest: "a".repeat(64),
+    controls,
+    findings: {
+      credentialClassHits: 0,
+      tokenClassHits: 0,
+      keyMaterialClassHits: 0,
+      walletMaterialClassHits: 0,
+      unclassifiedEntropyHits: 0
+    },
+    evidenceDigest: "b".repeat(64)
+  };
+}
+
+function auditIntegrityAssessment(controls) {
+  return {
+    schema: AUDIT_INTEGRITY_SCHEMA,
+    assessmentId: "audit_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-07T00:00:00.000Z",
+    environment: "staging",
+    systemClass: "exchange",
+    streamClass: "ledger-events",
+    policyRevision: "c".repeat(40),
+    streamDigest: "d".repeat(64),
+    anchorDigest: "e".repeat(64),
+    controls,
+    findings: {
+      criticalOpen: 0,
+      highOpen: 0,
+      sequenceGaps: 0,
+      duplicateEvents: 0,
+      integrityMismatches: 0
+    },
+    evidenceDigest: "f".repeat(64)
+  };
+}
+
+function securityExceptionApproval(role, marker, approvedAt = "2026-08-08T00:00:00.000Z") {
+  return {
+    role,
+    approverId: `approver_${marker.repeat(16)}`,
+    approvedAt,
+    attestationDigest: marker.repeat(64)
+  };
+}
+
+const exceptionRiskControls = Object.freeze([
+  "scopeBound",
+  "ownerAssigned",
+  "customerImpactAssessed",
+  "regulatoryImpactAssessed",
+  "remediationPlanApproved",
+  "compensatingControlsVerified",
+  "monitoringPlanVerified",
+  "expiryEnforced",
+  "rollbackPlanVerified"
+]);
+
+function securityExceptionControls(enabled = exceptionRiskControls) {
+  return {
+    ...Object.fromEntries(SECURITY_EXCEPTION_CONTROL_FIELDS.map((control) => [control, enabled.includes(control)])),
+    maxDurationHours: 720
+  };
+}
+
+function securityExceptionCase(overrides = {}) {
+  const base = {
+    schema: SECURITY_EXCEPTION_SCHEMA,
+    exceptionId: "exception_0123456789abcdef0123456789abcdef",
+    phase: "risk-review-approved",
+    requestedAt: "2026-08-07T00:00:00.000Z",
+    lastTransitionAt: "2026-08-08T00:00:00.000Z",
+    expiresAt: "2026-09-06T00:00:00.000Z",
+    environment: "staging",
+    scope: {
+      component: "entelevault-service",
+      controlFamily: "monitoring",
+      riskClass: "moderate",
+      exceptionClass: "temporary-operational"
+    },
+    controls: securityExceptionControls(),
+    approvals: [
+      securityExceptionApproval("security", "1"),
+      securityExceptionApproval("risk", "2"),
+      securityExceptionApproval("control-owner", "3")
+    ],
+    findings: { criticalOpen: 0, highOpen: 0, mediumOpen: 0 },
+    evidenceDigest: "1".repeat(64)
+  };
+  return {
+    ...base,
+    ...overrides,
+    scope: { ...base.scope, ...(overrides.scope ?? {}) },
+    controls: { ...base.controls, ...(overrides.controls ?? {}) },
+    findings: { ...base.findings, ...(overrides.findings ?? {}) }
+  };
+}
+
 function result(id, evaluatedCases, passed) {
   return { id, status: passed ? "PASS" : "FAIL", evaluatedCases };
 }
@@ -840,6 +970,87 @@ function assureResilienceReadiness() {
   return result("VL-PLATFORM-RESILIENCE", total, eligible === 1 && !authorityGranted);
 }
 
+function assureSecretLeakage() {
+  const total = 1 << REQUIRED_SECRET_LEAKAGE_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(
+      REQUIRED_SECRET_LEAKAGE_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))])
+    );
+    const decision = evaluateSecretLeakage(secretLeakageAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_LEAKAGE_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_LEAKAGE_REVIEW")) {
+      return result("VL-PLATFORM-SECRET-LEAKAGE", total, false);
+    }
+  }
+  return result("VL-PLATFORM-SECRET-LEAKAGE", total, eligible === 1 && !authorityGranted);
+}
+
+function assureAuditIntegrity() {
+  const total = 1 << REQUIRED_AUDIT_INTEGRITY_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(
+      REQUIRED_AUDIT_INTEGRITY_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))])
+    );
+    const decision = evaluateAuditIntegrity(auditIntegrityAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_AUDIT_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_AUDIT_REVIEW")) {
+      return result("VL-PLATFORM-AUDIT-INTEGRITY", total, false);
+    }
+  }
+  return result("VL-PLATFORM-AUDIT-INTEGRITY", total, eligible === 1 && !authorityGranted);
+}
+
+function assureSecurityExceptionGovernance() {
+  const ready = evaluateSecurityException(securityExceptionCase());
+  const blocked = evaluateSecurityException(securityExceptionCase({ findings: { highOpen: 1 } }));
+  const remediated = securityExceptionCase({
+    phase: "remediated",
+    lastTransitionAt: "2026-08-10T00:00:00.000Z",
+    controls: securityExceptionControls([...exceptionRiskControls, "remediationVerified"])
+  });
+  const closed = securityExceptionCase({
+    phase: "independently-closed",
+    lastTransitionAt: "2026-08-11T00:00:00.000Z",
+    controls: securityExceptionControls(SECURITY_EXCEPTION_CONTROL_FIELDS),
+    approvals: [
+      securityExceptionApproval("security", "1"),
+      securityExceptionApproval("risk", "2"),
+      securityExceptionApproval("control-owner", "3"),
+      securityExceptionApproval("independent-review", "4", "2026-08-11T00:00:00.000Z")
+    ]
+  });
+  const transition = validateSecurityExceptionTransition(remediated, closed);
+  let extensionRejected = false;
+  try {
+    validateSecurityExceptionTransition(
+      remediated,
+      securityExceptionCase({ ...closed, expiresAt: "2026-09-07T00:00:00.000Z" })
+    );
+  } catch (error) {
+    extensionRejected = new Set([
+      "SECURITY_EXCEPTION_DURATION_REJECTED",
+      "SECURITY_EXCEPTION_TRANSITION_IDENTITY_REJECTED"
+    ]).has(error?.code);
+  }
+  const passed =
+    ready.recommendation === "READY_FOR_SEPARATE_EXCEPTION_AUTHORIZATION" &&
+    blocked.recommendation === "ACTIVE_EXCEPTION_GOVERNANCE_REQUIRED" &&
+    transition.accepted &&
+    !grantsAuthority(ready) &&
+    !grantsAuthority(blocked) &&
+    !grantsAuthority(transition) &&
+    extensionRejected;
+  return result("VL-PLATFORM-SECURITY-EXCEPTION", 4, passed);
+}
+
 export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOString() } = {}) {
   if (typeof generatedAt !== "string" || Number.isNaN(Date.parse(generatedAt))) {
     throw new TypeError("generatedAt must be an ISO-compatible date-time");
@@ -856,11 +1067,14 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureBreakGlassGovernance(),
     assureApiSessionSecurity(),
     assureSignerCeremonyGovernance(),
-    assureResilienceReadiness()
+    assureResilienceReadiness(),
+    assureSecretLeakage(),
+    assureAuditIntegrity(),
+    assureSecurityExceptionGovernance()
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v4",
+    schema: "enteleclos.platform-policy-assurance.v5",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

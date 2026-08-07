@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/security-exception-governance.v1.json",
+  "title": "EnteleCLOS time-bounded security-exception governance case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "exceptionId", "phase", "requestedAt", "lastTransitionAt", "expiresAt", "environment", "scope", "controls", "approvals", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.security-exception-governance.v1" },
+    "exceptionId": { "type": "string", "pattern": "^exception_[0-9a-f]{32}$" },
+    "phase": { "enum": ["requested", "triaged", "compensating-controls-verified", "risk-review-approved", "monitoring-active", "remediated", "independently-closed"] },
+    "requestedAt": { "type": "string", "format": "date-time" },
+    "lastTransitionAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["component", "controlFamily", "riskClass", "exceptionClass"],
+      "properties": {
+        "component": { "enum": ["enteleclos-assurance", "enteleexchange-api", "enteleexchange-web", "entelevault-service", "entelewallet-client"] },
+        "controlFamily": { "enum": ["authentication", "authorization", "custody", "cryptography", "supply-chain", "resilience", "monitoring", "privacy"] },
+        "riskClass": { "enum": ["low", "moderate", "high", "critical"] },
+        "exceptionClass": { "enum": ["temporary-operational", "vendor-dependency", "migration", "false-positive-investigation"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scopeBound", "ownerAssigned", "customerImpactAssessed", "regulatoryImpactAssessed", "remediationPlanApproved", "compensatingControlsVerified", "monitoringPlanVerified", "expiryEnforced", "rollbackPlanVerified", "remediationVerified", "independentClosureApproved", "maxDurationHours"],
+      "properties": {
+        "scopeBound": { "type": "boolean" },
+        "ownerAssigned": { "type": "boolean" },
+        "customerImpactAssessed": { "type": "boolean" },
+        "regulatoryImpactAssessed": { "type": "boolean" },
+        "remediationPlanApproved": { "type": "boolean" },
+        "compensatingControlsVerified": { "type": "boolean" },
+        "monitoringPlanVerified": { "type": "boolean" },
+        "expiryEnforced": { "type": "boolean" },
+        "rollbackPlanVerified": { "type": "boolean" },
+        "remediationVerified": { "type": "boolean" },
+        "independentClosureApproved": { "type": "boolean" },
+        "maxDurationHours": { "type": "integer", "minimum": 1, "maximum": 720 }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "approverId", "approvedAt", "attestationDigest"],
+        "properties": {
+          "role": { "enum": ["security", "risk", "control-owner", "privacy", "compliance", "independent-review"] },
+          "approverId": { "type": "string", "pattern": "^approver_[0-9a-f]{16}$" },
+          "approvedAt": { "type": "string", "format": "date-time" },
+          "attestationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "mediumOpen"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "mediumOpen": { "type": "integer", "minimum": 0, "maximum": 1000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

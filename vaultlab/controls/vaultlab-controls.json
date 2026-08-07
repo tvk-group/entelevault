@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-6",
+  "catalogId": "ENTELE-VAULTLAB-7",
   "status": "draft",
   "controls": [
     {
@@ -204,6 +204,42 @@
     {
       "id": "VL-RESILIENCE-002",
       "title": "Resilience evidence contains digests and classifications only and cannot restore, fail over, mutate data, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-LEAKAGE-001",
+      "title": "Secret-leakage readiness requires all twelve log, trace, crash, artifact, support, telemetry, entropy, redaction, canary, ruleset, and review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-LEAKAGE-002",
+      "title": "Secret-leakage evidence contains counts and digests only and cannot revoke credentials, delete artifacts, grant access, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-AUDIT-001",
+      "title": "Immutable-audit readiness requires all fourteen append-only, chain, sequence, time, identity, access, retention, replication, export, schema, alert, and review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-AUDIT-002",
+      "title": "Audit-integrity evidence contains digests and counts only and cannot read, write, delete, repair, mutate, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-EXCEPTION-001",
+      "title": "Security exceptions enforce forward-only phases, independent quorum, monotonic controls, immutable expiry, a thirty-day ceiling, and no critical-risk waiver",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-EXCEPTION-002",
+      "title": "Security-exception records reject operational and secret material and cannot grant exceptions, bypass policy, remediate, deploy, sign, or move assets",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }

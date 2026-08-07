@@ -31,6 +31,9 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - a sanitized API/session guard for client registration, mTLS, request signing, replay, rate, idempotency, revocation, lifetime, and approval evidence;
 - forward-only HSM/MPC signer-ceremony governance that never receives shares or activates a signer;
 - a fourteen-control resilience gate with all 16,384 combinations tested and no restoration or failover authority.
+- a twelve-control secret-leakage gate with all 4,096 combinations tested and no access to scanned content;
+- a fourteen-control immutable-audit gate with all 16,384 combinations tested and no log-read, write, or deletion authority;
+- forward-only, time-bounded security-exception governance with no critical-risk waivers or policy-bypass authority.
 
 VaultLab never receives raw production data. It runs in an isolated CI/staging test cell; production-observation policy calls contain only exact sanitized metadata and evidence digests. VaultLab produces redacted assurance results and is excluded from production bundles.
 
@@ -62,6 +65,9 @@ See:
 - [API and session security](./vaultlab/docs/API_SESSION_SECURITY.md)
 - [Signer-ceremony governance](./vaultlab/docs/SIGNER_CEREMONY_GOVERNANCE.md)
 - [Resilience readiness](./vaultlab/docs/RESILIENCE_READINESS.md)
+- [Secret-leakage assurance](./vaultlab/docs/SECRET_LEAKAGE_ASSURANCE.md)
+- [Immutable-audit integrity readiness](./vaultlab/docs/AUDIT_INTEGRITY_READINESS.md)
+- [Security-exception governance](./vaultlab/docs/SECURITY_EXCEPTION_GOVERNANCE.md)
 - [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)
 - [Security policy](./SECURITY.md)
 

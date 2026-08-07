@@ -35,6 +35,8 @@ VaultLab v0.5 adds privileged-access and break-glass governance evidence. It can
 
 VaultLab v0.6 adds API/session policy and signer-ceremony governance. It cannot authenticate clients, execute requests, submit orders, run ceremonies, generate keys, activate signers, or export key material.
 
+VaultLab v0.7 adds secret-leakage, immutable-audit, and security-exception assurance. It cannot receive scanned content, read or mutate audit records, revoke credentials, delete artifacts, grant exceptions, bypass policy, or remediate systems.
+
 ## Phase 3 — exchange and custody assurance
 
 - hot/warm/cold custody policy with quantitative exposure limits;
@@ -60,6 +62,8 @@ The v0.6 resilience gate exhaustively evaluates fourteen staging controls. Eligi
 - bug bounty with explicit asset scope and safe-harbor terms;
 - purple-team exercises using synthetic accounts and canary assets;
 - control telemetry, exception aging, remediation SLAs, and board reporting.
+
+The v0.7 continuous-assurance layer makes sanitized leakage and audit evidence release-blocking and prevents security exceptions from silently weakening policy. Critical-risk waivers are prohibited; other exceptions are capped at 720 hours, cannot be extended in place, and require independent governance. Eligibility remains evidence for separate review, never execution authority.
 
 ## Release metrics
 

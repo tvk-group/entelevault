@@ -51,10 +51,13 @@ The adapter must accept only the VaultLab specimen classification and must not s
 - API/session metadata contains no keys, credentials, tokens, raw payloads, identities, addresses, signatures, or transactions and never executes a request;
 - signer-ceremony evidence contains no key shares, keys, entropy values, transcript content, credentials, or signatures and cannot run a ceremony or activate a signer;
 - resilience evidence contains digests, a revision, classifications, and aggregate counts only, requires all fourteen controls, and cannot read backups, restore, fail over, or mutate state.
+- secret-leakage evidence contains classifications, aggregate finding counts, revisions, and digests only, requires all twelve controls, and cannot receive scanned content, revoke credentials, or delete artifacts;
+- immutable-audit evidence contains classifications, aggregate counts, revisions, and digests only, requires all fourteen controls, and cannot read, write, delete, or repair audit records;
+- security exceptions preserve a forward-only lifecycle, independent quorum, monotonic controls, immutable expiry, a 720-hour ceiling, and a prohibition on critical-risk waivers without granting a policy bypass.
 
 ## Evidence flow
 
-The CI job sends only report digests, control results, source revision, runner identity, timestamps, and aggregate evaluated-case counts to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, signing or withdrawal request, API secrets or payloads, signer shares or transcripts, backup content or restored data, raw identity/access evidence, ledger balances or records, break-glass session content, artifact content, incident payload, environment variables, logs containing raw exceptions, or production data.
+The CI job sends only report digests, control results, source revision, runner identity, timestamps, and aggregate evaluated-case counts to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, signing or withdrawal request, API secrets or payloads, signer shares or transcripts, backup content or restored data, raw identity/access evidence, ledger balances or records, audit events, log or trace content, exception justification text, break-glass session content, artifact content, incident payload, environment variables, logs containing raw exceptions, or production data.
 
 The evidence envelope is a transport contract, not a blockchain transaction and not a production signature. ChronoSeal/GraphVAULT integration must add its own independently reviewed service authentication, authorization, idempotency, retention, and signing design.
 
