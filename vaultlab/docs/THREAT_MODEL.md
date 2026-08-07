@@ -27,6 +27,9 @@ This model separates assurance testing from production custody. VaultLab covers 
 | API and sessions | stolen token, overbroad scope, replay, unsigned write, revoked client, or rate abuse | registration, least privilege, mTLS, request signing, nonce/time window, rate limit, idempotency, revocation check, dual approval | VaultLab API/session tests + API penetration test |
 | Signer ceremony | colluding participants, unsafe environment, exportable material, weak quorum, unsealed transcript, or premature approval | immutable architecture, prohibited export, participant independence, isolation, attestation, quorum rehearsal, sealed digest, independent review | VaultLab ceremony state machine + external HSM/MPC assessment |
 | Resilience | corrupt or mutable backups, ransomware propagation, dependency-order failure, replay duplication, unreconciled restore, or failed failback | encrypted immutable backups, isolation, integrity, rehearsal, idempotency, reconciliation, failover/failback, monitoring, independent review | exhaustive VaultLab resilience gate + isolated recovery exercise |
+| Secret leakage | credentials, tokens, key material, or wallet data appearing in logs, traces, crash reports, artifacts, support exports, or telemetry | multi-surface scanning, entropy and pattern detection, verified redaction, canaries, pinned rules, zero findings, independent review | exhaustive VaultLab leakage gate + approved external scanners |
+| Immutable audit | deleted, reordered, duplicated, backdated, forged, or unreadably retained security records | append-only storage, hash chain, sequence/time validation, attested writers, retention lock, replication, export integrity, tamper rehearsal | exhaustive VaultLab audit gate + storage/IAM assessment |
+| Security exceptions | permanent waiver, critical-risk bypass, expiry extension, colluding approvers, weak compensation, or premature closure | forward-only phases, no critical waiver, 720-hour ceiling, immutable expiry, independent quorum, monitoring, verified remediation and closure | VaultLab exception state machine + risk/compliance review |
 | Availability | DDoS, queue exhaustion, market volatility | WAF, rate limits, circuit breakers, backpressure, tested recovery | load/chaos testing and incident exercises |
 
 ## Security agents to build safely
@@ -45,5 +48,8 @@ This model separates assurance testing from production custody. VaultLab covers 
 12. API Session Guard — validates client, session, replay, rate, scope, signature, and revocation evidence; it cannot execute requests or submit orders.
 13. Signer Ceremony Agent — validates forward-only HSM/MPC ceremony evidence; it never receives shares and cannot generate keys or activate signers.
 14. Resilience Readiness Agent — validates digest-only recovery evidence; it cannot read backups, restore, fail over, or mutate state.
+15. Secret Leakage Assurance Agent — validates counts, classifications, ruleset revisions, and evidence digests; it never receives scanned content and cannot revoke or delete.
+16. Immutable Audit Integrity Agent — validates digest-only chain, sequence, time, access, retention, replication, and tamper evidence; it cannot read or mutate audit records.
+17. Security Exception Governance Agent — enforces forward-only, expiring, independently reviewed exception evidence; it cannot grant a waiver, bypass policy, or remediate.
 
 No agent receives unilateral custody authority. Recommendations and detections are separated from signing and asset movement.
