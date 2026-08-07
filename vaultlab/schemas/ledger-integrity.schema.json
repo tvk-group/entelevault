@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/ledger-integrity.v1.json",
+  "title": "EnteleEXCHANGE ledger-integrity evidence assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "snapshot", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleexchange.ledger-integrity.v1" },
+    "assessmentId": { "type": "string", "pattern": "^ledger_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledgerSnapshotDigest", "assetSnapshotDigest", "liabilitySnapshotDigest", "reconciliationDigest", "reserveMethodDigest", "sequenceClass", "coverageClass"],
+      "properties": {
+        "ledgerSnapshotDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "assetSnapshotDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "liabilitySnapshotDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "reconciliationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "reserveMethodDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "sequenceClass": { "enum": ["current", "lagging", "unknown"] },
+        "coverageClass": { "enum": ["complete", "partial", "unknown"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["doubleEntryInvariantVerified", "customerAssetSegregationVerified", "hotWalletExposureWithinPolicy", "liabilitySnapshotComplete", "assetSnapshotComplete", "reconciliationMatched", "withdrawalQueueReconciled", "depositFinalityReconciled", "feeAccountingReconciled", "suspenseAccountsCleared", "reserveMethodReviewed", "independentAttestationCurrent", "monitoringAlertsTested", "replayProtectionVerified"],
+      "properties": {
+        "doubleEntryInvariantVerified": { "type": "boolean" },
+        "customerAssetSegregationVerified": { "type": "boolean" },
+        "hotWalletExposureWithinPolicy": { "type": "boolean" },
+        "liabilitySnapshotComplete": { "type": "boolean" },
+        "assetSnapshotComplete": { "type": "boolean" },
+        "reconciliationMatched": { "type": "boolean" },
+        "withdrawalQueueReconciled": { "type": "boolean" },
+        "depositFinalityReconciled": { "type": "boolean" },
+        "feeAccountingReconciled": { "type": "boolean" },
+        "suspenseAccountsCleared": { "type": "boolean" },
+        "reserveMethodReviewed": { "type": "boolean" },
+        "independentAttestationCurrent": { "type": "boolean" },
+        "monitoringAlertsTested": { "type": "boolean" },
+        "replayProtectionVerified": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "mediumOpen", "unreconciledItems"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "mediumOpen": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "unreconciledItems": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

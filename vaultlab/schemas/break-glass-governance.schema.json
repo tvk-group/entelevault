@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/break-glass-governance.v1.json",
+  "title": "EnteleCLOS break-glass governance evidence case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "caseId", "phase", "openedAt", "lastTransitionAt", "environment", "scope", "authority", "controls", "approvals", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.break-glass-governance.v1" },
+    "caseId": { "type": "string", "pattern": "^bgcase_[0-9a-f]{32}$" },
+    "phase": { "enum": ["requested", "authority-verified", "quorum-approved", "active-window", "revoked", "reviewed", "closed"] },
+    "openedAt": { "type": "string", "format": "date-time" },
+    "lastTransitionAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["systemClass", "riskClass", "accessClass"],
+      "properties": {
+        "systemClass": { "enum": ["wallet", "exchange", "custody", "vault", "infrastructure", "identity"] },
+        "riskClass": { "enum": ["high", "critical"] },
+        "accessClass": { "enum": ["read-only", "bounded-admin"] }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["incidentLinked", "legalBasisReviewed", "ownerVerified", "leastPrivilegeReviewed"],
+      "properties": {
+        "incidentLinked": { "type": "boolean" },
+        "legalBasisReviewed": { "type": "boolean" },
+        "ownerVerified": { "type": "boolean" },
+        "leastPrivilegeReviewed": { "type": "boolean" }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["normalAccessUnavailable", "emergencyJustificationReviewed", "phishingResistantMfaVerified", "hardwareBoundIdentityVerified", "timeLimitMinutes", "sessionRecordingPlanned", "realTimeMonitoringPlanned", "automaticRevocationPlanned", "postEventReviewPlanned", "revocationVerified", "sessionEvidenceSealed", "independentClosureApproved"],
+      "properties": {
+        "normalAccessUnavailable": { "type": "boolean" },
+        "emergencyJustificationReviewed": { "type": "boolean" },
+        "phishingResistantMfaVerified": { "type": "boolean" },
+        "hardwareBoundIdentityVerified": { "type": "boolean" },
+        "timeLimitMinutes": { "type": "integer", "minimum": 5, "maximum": 60 },
+        "sessionRecordingPlanned": { "type": "boolean" },
+        "realTimeMonitoringPlanned": { "type": "boolean" },
+        "automaticRevocationPlanned": { "type": "boolean" },
+        "postEventReviewPlanned": { "type": "boolean" },
+        "revocationVerified": { "type": "boolean" },
+        "sessionEvidenceSealed": { "type": "boolean" },
+        "independentClosureApproved": { "type": "boolean" }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "approverId", "approvedAt", "attestationDigest"],
+        "properties": {
+          "role": { "enum": ["security", "operations", "custody", "legal", "independent-review"] },
+          "approverId": { "type": "string", "pattern": "^approver_[0-9a-f]{16}$" },
+          "approvedAt": { "type": "string", "format": "date-time" },
+          "attestationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "mediumOpen"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "mediumOpen": { "type": "integer", "minimum": 0, "maximum": 1000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

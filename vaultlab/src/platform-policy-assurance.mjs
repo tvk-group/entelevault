@@ -29,6 +29,22 @@ import {
   INCIDENT_CONTROL_FIELDS,
   validateIncidentTransition
 } from "./incident-governance.mjs";
+import {
+  evaluatePrivilegedAccessRequest,
+  PRIVILEGED_ACCESS_SCHEMA,
+  validatePrivilegedAccessRequest
+} from "./privileged-access-policy.mjs";
+import {
+  evaluateLedgerIntegrity,
+  LEDGER_INTEGRITY_SCHEMA,
+  REQUIRED_LEDGER_CONTROLS
+} from "./ledger-integrity-readiness.mjs";
+import {
+  BREAK_GLASS_CASE_SCHEMA,
+  BREAK_GLASS_CONTROL_FIELDS,
+  evaluateBreakGlassCase,
+  validateBreakGlassTransition
+} from "./break-glass-governance.mjs";
 
 const AUTHORITY_FIELDS = Object.freeze([
   "executionAuthorized",
@@ -39,7 +55,14 @@ const AUTHORITY_FIELDS = Object.freeze([
   "withdrawalAuthorized",
   "holdExecutionAuthorized",
   "containmentAuthorized",
-  "accessRevocationAuthorized"
+  "accessRevocationAuthorized",
+  "accessGrantAuthorized",
+  "privilegedActionAuthorized",
+  "financialClaimAuthorized",
+  "balanceMutationAuthorized",
+  "tradingAuthorized",
+  "sessionStartAuthorized",
+  "revocationExecutionAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -247,6 +270,124 @@ function incidentCase(overrides = {}) {
   };
 }
 
+function privilegedAccessRequest(overrides = {}) {
+  const base = {
+    schema: PRIVILEGED_ACCESS_SCHEMA,
+    requestId: "pareq_0123456789abcdef0123456789abcdef",
+    observedAt: "2026-08-07T00:00:00.000Z",
+    environment: "ci",
+    principal: {
+      roleClass: "security",
+      employmentStatus: "active",
+      privilegeTier: "standard",
+      separationOfDutiesConflict: false,
+      recentRoleChange: false
+    },
+    session: {
+      assurance: "phishing-resistant",
+      deviceTrust: "managed",
+      sessionAgeMinutes: 5,
+      networkTrust: "corporate",
+      anomalyClass: "none"
+    },
+    action: {
+      resourceClass: "configuration",
+      riskClass: "low",
+      changeWindow: "approved",
+      scopeClass: "read-only"
+    },
+    controls: {
+      phishingResistantMfaSatisfied: true,
+      freshReauthenticationSatisfied: true,
+      ticketBound: true,
+      justInTimeGrant: true,
+      maxSessionAgeMinutes: 30,
+      grantExpiresMinutes: 15,
+      dualApprovalRequired: false,
+      dualApprovalSatisfied: false,
+      breakGlassDeclared: false,
+      postActionReviewRequired: false
+    },
+    evidenceDigest: "a".repeat(64)
+  };
+  return {
+    ...base,
+    ...overrides,
+    principal: { ...base.principal, ...(overrides.principal ?? {}) },
+    session: { ...base.session, ...(overrides.session ?? {}) },
+    action: { ...base.action, ...(overrides.action ?? {}) },
+    controls: { ...base.controls, ...(overrides.controls ?? {}) }
+  };
+}
+
+function ledgerAssessment(controls) {
+  return {
+    schema: LEDGER_INTEGRITY_SCHEMA,
+    assessmentId: "ledger_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-07T00:00:00.000Z",
+    environment: "staging",
+    snapshot: {
+      ledgerSnapshotDigest: "a".repeat(64),
+      assetSnapshotDigest: "b".repeat(64),
+      liabilitySnapshotDigest: "c".repeat(64),
+      reconciliationDigest: "d".repeat(64),
+      reserveMethodDigest: "e".repeat(64),
+      sequenceClass: "current",
+      coverageClass: "complete"
+    },
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, mediumOpen: 0, unreconciledItems: 0 },
+    evidenceDigest: "f".repeat(64)
+  };
+}
+
+function breakGlassApproval(role, marker) {
+  return {
+    role,
+    approverId: `approver_${marker.repeat(16)}`,
+    approvedAt: "2026-08-09T00:00:00.000Z",
+    attestationDigest: marker.repeat(64)
+  };
+}
+
+function breakGlassCase(overrides = {}) {
+  const base = {
+    schema: BREAK_GLASS_CASE_SCHEMA,
+    caseId: "bgcase_0123456789abcdef0123456789abcdef",
+    phase: "reviewed",
+    openedAt: "2026-08-07T00:00:00.000Z",
+    lastTransitionAt: "2026-08-09T00:00:00.000Z",
+    environment: "staging",
+    scope: { systemClass: "vault", riskClass: "critical", accessClass: "bounded-admin" },
+    authority: {
+      incidentLinked: true,
+      legalBasisReviewed: true,
+      ownerVerified: true,
+      leastPrivilegeReviewed: true
+    },
+    controls: {
+      ...Object.fromEntries(BREAK_GLASS_CONTROL_FIELDS.map((control) => [control, true])),
+      timeLimitMinutes: 30
+    },
+    approvals: [
+      breakGlassApproval("security", "1"),
+      breakGlassApproval("operations", "2"),
+      breakGlassApproval("custody", "3"),
+      breakGlassApproval("independent-review", "4")
+    ],
+    findings: { criticalOpen: 0, highOpen: 0, mediumOpen: 0 },
+    evidenceDigest: "5".repeat(64)
+  };
+  return {
+    ...base,
+    ...overrides,
+    scope: { ...base.scope, ...(overrides.scope ?? {}) },
+    authority: { ...base.authority, ...(overrides.authority ?? {}) },
+    controls: { ...base.controls, ...(overrides.controls ?? {}) },
+    findings: { ...base.findings, ...(overrides.findings ?? {}) }
+  };
+}
+
 function result(id, evaluatedCases, passed) {
   return { id, status: passed ? "PASS" : "FAIL", evaluatedCases };
 }
@@ -395,6 +536,86 @@ function assureIncidentGovernance() {
   return result("VL-PLATFORM-INCIDENT", 4, passed);
 }
 
+function assurePrivilegedAccess() {
+  const decisions = [
+    evaluatePrivilegedAccessRequest(privilegedAccessRequest()),
+    evaluatePrivilegedAccessRequest(
+      privilegedAccessRequest({ principal: { separationOfDutiesConflict: true } })
+    ),
+    evaluatePrivilegedAccessRequest(
+      privilegedAccessRequest({ action: { riskClass: "medium" } })
+    ),
+    evaluatePrivilegedAccessRequest(
+      privilegedAccessRequest({ session: { deviceTrust: "blocked" } })
+    )
+  ];
+  let prohibitedRejected = false;
+  try {
+    validatePrivilegedAccessRequest(privilegedAccessRequest({ accessToken: "prohibited" }));
+  } catch (error) {
+    prohibitedRejected = error?.code === "PRIVILEGED_ACCESS_PROHIBITED_FIELD";
+  }
+  const passed =
+    decisions[0].recommendation === "PROCEED_TO_SEPARATE_ACCESS_AUTHORIZATION" &&
+    decisions[1].recommendation === "BLOCK_AND_ESCALATE" &&
+    decisions[2].recommendation === "REQUIRE_HUMAN_PRIVILEGE_REVIEW" &&
+    decisions[3].recommendation === "BLOCK_AND_ESCALATE" &&
+    decisions.every((decision) => !grantsAuthority(decision)) &&
+    prohibitedRejected;
+  return result("VL-PLATFORM-PRIVILEGED", decisions.length + 1, passed);
+}
+
+function assureLedgerIntegrity() {
+  const total = 1 << REQUIRED_LEDGER_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(
+      REQUIRED_LEDGER_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))])
+    );
+    const decision = evaluateLedgerIntegrity(ledgerAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_FINANCIAL_CONTROL_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_FINANCIAL_CONTROL_REVIEW")) {
+      return result("VL-PLATFORM-LEDGER", total, false);
+    }
+  }
+  return result("VL-PLATFORM-LEDGER", total, eligible === 1 && !authorityGranted);
+}
+
+function assureBreakGlassGovernance() {
+  const reviewed = evaluateBreakGlassCase(breakGlassCase());
+  const blocked = evaluateBreakGlassCase(breakGlassCase({ findings: { mediumOpen: 1 } }));
+  const closed = breakGlassCase({
+    phase: "closed",
+    lastTransitionAt: "2026-08-09T01:00:00.000Z"
+  });
+  const transition = validateBreakGlassTransition(breakGlassCase(), closed);
+  let downgradeRejected = false;
+  try {
+    validateBreakGlassTransition(
+      breakGlassCase(),
+      breakGlassCase({
+        phase: "closed",
+        lastTransitionAt: "2026-08-09T01:00:00.000Z",
+        scope: { riskClass: "high" }
+      })
+    );
+  } catch (error) {
+    downgradeRejected = error?.code === "BREAK_GLASS_TRANSITION_CONTROL_REJECTED";
+  }
+  const passed =
+    reviewed.recommendation === "READY_FOR_SEPARATE_CLOSURE_REVIEW" &&
+    blocked.recommendation === "ACTIVE_GOVERNANCE_REQUIRED" &&
+    transition.accepted &&
+    !grantsAuthority(reviewed) &&
+    !grantsAuthority(blocked) &&
+    !grantsAuthority(transition) &&
+    downgradeRejected;
+  return result("VL-PLATFORM-BREAK-GLASS", 4, passed);
+}
+
 export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOString() } = {}) {
   if (typeof generatedAt !== "string" || Number.isNaN(Date.parse(generatedAt))) {
     throw new TypeError("generatedAt must be an ISO-compatible date-time");
@@ -405,11 +626,14 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureCustodyReadiness(),
     assureWithdrawalPolicy(),
     assureReleaseProvenance(),
-    assureIncidentGovernance()
+    assureIncidentGovernance(),
+    assurePrivilegedAccess(),
+    assureLedgerIntegrity(),
+    assureBreakGlassGovernance()
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v2",
+    schema: "enteleclos.platform-policy-assurance.v3",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

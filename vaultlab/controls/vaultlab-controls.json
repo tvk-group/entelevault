@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-4",
+  "catalogId": "ENTELE-VAULTLAB-5",
   "status": "draft",
   "controls": [
     {
@@ -132,6 +132,42 @@
     {
       "id": "VL-INCIDENT-002",
       "title": "Incident decisions cannot contain, revoke, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-PRIVILEGE-001",
+      "title": "Privileged-access policy rejects raw identity, credential, token, command, and target material",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-PRIVILEGE-002",
+      "title": "Privileged-access decisions enforce JIT, MFA, reauthentication, session, SoD, change-window, and approval evidence without granting access",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-LEDGER-001",
+      "title": "Ledger-integrity readiness requires all fourteen segregation, accounting, reconciliation, reserve-method, monitoring, and replay controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-LEDGER-002",
+      "title": "Ledger evidence contains digests and classifications only and cannot establish solvency, mutate balances, trade, withdraw, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-BREAKGLASS-001",
+      "title": "Break-glass governance preserves phase order, authority evidence, quorum, immutable time limits, revocation, sealed evidence, and independent closure",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-BREAKGLASS-002",
+      "title": "Break-glass records cannot grant access, start sessions, execute revocation, deploy, sign, or move assets",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }
