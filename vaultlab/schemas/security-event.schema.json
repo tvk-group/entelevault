@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/security-event.v1.json",
+  "title": "EnteleCLOS bounded security event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "eventId",
+    "occurredAt",
+    "type",
+    "severity",
+    "resource",
+    "evidenceDigest",
+    "signals"
+  ],
+  "properties": {
+    "schema": { "const": "enteleclos.security-event.v1" },
+    "eventId": { "type": "string", "pattern": "^evt_[0-9a-f]{32}$" },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "type": {
+      "enum": [
+        "dependency.provenance-failed",
+        "recovery.governance-failed",
+        "session.account-takeover-suspected",
+        "signing.intent-mismatch",
+        "vault.integrity-failure",
+        "vault.policy-downgrade",
+        "withdrawal.risk-elevated"
+      ]
+    },
+    "severity": { "enum": ["low", "medium", "high", "critical"] },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "environment"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "build",
+            "recovery-case",
+            "session",
+            "signing-request",
+            "vault-policy",
+            "withdrawal-request"
+          ]
+        },
+        "id": { "type": "string", "pattern": "^res_[0-9a-f]{16}$" },
+        "environment": { "enum": ["ci", "staging", "production-observation"] }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "signals": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "value"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,47}$" },
+          "value": { "type": ["boolean", "number"] }
+        }
+      }
+    }
+  }
+}

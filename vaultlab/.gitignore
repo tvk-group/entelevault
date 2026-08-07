@@ -2,6 +2,8 @@ node_modules/
 coverage/
 reports/
 vaultlab-assurance-report.json
+vaultlab-evidence-envelope.json
+vaultlab-production-boundary-report.json
 *.log
 *.wallet
 *.keystore

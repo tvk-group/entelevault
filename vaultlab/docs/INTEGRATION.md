@@ -27,6 +27,7 @@ The adapter must accept only the VaultLab specimen classification and must not s
 - application unit, integration, and end-to-end tests pass;
 - dependency, license, secret, and static-analysis gates pass;
 - production build proves absence of VaultLab exports and test credentials;
+- `npm run verify:production-boundary` proves that production source contains no VaultLab import, synthetic schema, fixture marker, or test credential marker;
 - signing/custody changes receive two security reviewers;
 - cryptographic-format or recovery-policy changes require independent external review;
 - release has a rollback plan and incident owner.
@@ -34,6 +35,8 @@ The adapter must accept only the VaultLab specimen classification and must not s
 ## Evidence flow
 
 The CI job sends only the report digest, control result, source revision, runner identity, and timestamp to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, environment variables, logs containing raw exceptions, or production data.
+
+The evidence envelope is a transport contract, not a blockchain transaction and not a production signature. ChronoSeal/GraphVAULT integration must add its own independently reviewed service authentication, authorization, idempotency, retention, and signing design.
 
 ## EnteleCLOS role
 
