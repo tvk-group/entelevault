@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/api-session-security.v1.json",
+  "title": "EnteleCLOS sanitized API and session security request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "observedAt", "environment", "client", "session", "request", "controls", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.api-session-security.v1" },
+    "requestId": { "type": "string", "pattern": "^apireq_[0-9a-f]{32}$" },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["ci", "staging", "production-observation"] },
+    "client": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientClass", "registrationStatus", "authMaterialAgeClass", "scopeClass", "ownerStatus"],
+      "properties": {
+        "clientClass": { "enum": ["first-party-service", "partner-service", "user-device", "automation"] },
+        "registrationStatus": { "enum": ["approved", "pending", "revoked", "unknown"] },
+        "authMaterialAgeClass": { "enum": ["current", "rotation-due", "expired", "unknown"] },
+        "scopeClass": { "enum": ["read-only", "bounded-write", "privileged", "unknown"] },
+        "ownerStatus": { "enum": ["active", "suspended", "unknown"] }
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assurance", "deviceTrust", "networkTrust", "ageMinutes", "anomalyClass"],
+      "properties": {
+        "assurance": { "enum": ["phishing-resistant", "mutual-tls", "signed-request", "standard", "degraded", "unknown"] },
+        "deviceTrust": { "enum": ["managed", "attested", "new", "blocked", "unknown"] },
+        "networkTrust": { "enum": ["private", "approved-public", "untrusted", "unknown"] },
+        "ageMinutes": { "type": "integer", "minimum": 0, "maximum": 1440 },
+        "anomalyClass": { "enum": ["none", "elevated", "critical", "unknown"] }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operationClass", "riskClass", "replayStatus", "originStatus", "rateClass"],
+      "properties": {
+        "operationClass": { "enum": ["read", "quote", "order-submit", "withdrawal-request", "admin-config", "unknown"] },
+        "riskClass": { "enum": ["low", "medium", "high", "critical", "unknown"] },
+        "replayStatus": { "enum": ["fresh", "replayed", "unknown"] },
+        "originStatus": { "enum": ["allowlisted", "new", "blocked", "unknown"] },
+        "rateClass": { "enum": ["normal", "elevated", "limit-exceeded", "unknown"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientRegistrationVerified", "leastPrivilegeVerified", "mutualTlsRequired", "mutualTlsSatisfied", "requestSignatureRequired", "requestSignatureVerified", "nonceVerified", "timestampWindowVerified", "rateLimitApplied", "schemaValidated", "idempotencyVerified", "sessionRevocationChecked", "maxSessionAgeMinutes", "dualApprovalRequired", "dualApprovalSatisfied"],
+      "properties": {
+        "clientRegistrationVerified": { "type": "boolean" },
+        "leastPrivilegeVerified": { "type": "boolean" },
+        "mutualTlsRequired": { "type": "boolean" },
+        "mutualTlsSatisfied": { "type": "boolean" },
+        "requestSignatureRequired": { "type": "boolean" },
+        "requestSignatureVerified": { "type": "boolean" },
+        "nonceVerified": { "type": "boolean" },
+        "timestampWindowVerified": { "type": "boolean" },
+        "rateLimitApplied": { "type": "boolean" },
+        "schemaValidated": { "type": "boolean" },
+        "idempotencyVerified": { "type": "boolean" },
+        "sessionRevocationChecked": { "type": "boolean" },
+        "maxSessionAgeMinutes": { "type": "integer", "minimum": 5, "maximum": 720 },
+        "dualApprovalRequired": { "type": "boolean" },
+        "dualApprovalSatisfied": { "type": "boolean" }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

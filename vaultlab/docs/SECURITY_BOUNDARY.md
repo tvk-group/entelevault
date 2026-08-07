@@ -29,7 +29,7 @@ VaultLab gives the EnteleKRON ecosystem a repeatable way to prove that cryptogra
 5. Decrypted specimens are zeroed after verification and are never returned.
 6. Reports contain no credential, plaintext, key, seed, wallet address, or candidate information.
 7. The package has no network or filesystem import API.
-8. Policy decisions never grant access, start sessions, mutate balances, trade, make financial claims, hold, contain, execute revocation, withdraw, sign, deploy, activate custody, or move assets.
+8. Policy decisions never execute API requests, grant access, start sessions, run ceremonies, generate keys, activate signers, restore, fail over, mutate data or balances, trade, make financial claims, hold, contain, execute revocation, withdraw, sign, deploy, activate custody, or move assets.
 9. Unknown fields, missing evidence, incomplete controls, backward transitions, and prohibited payload shapes fail closed.
 
 ## Trust limitation

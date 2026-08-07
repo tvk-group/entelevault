@@ -1,6 +1,6 @@
 import { VaultLabError } from "./errors.mjs";
 
-export const PLATFORM_POLICY_REPORT_SCHEMA = "enteleclos.platform-policy-assurance.v3";
+export const PLATFORM_POLICY_REPORT_SCHEMA = "enteleclos.platform-policy-assurance.v4";
 
 export const PLATFORM_POLICY_EXPECTED_CASES = Object.freeze({
   "VL-PLATFORM-SIGNING": 5,
@@ -11,7 +11,10 @@ export const PLATFORM_POLICY_EXPECTED_CASES = Object.freeze({
   "VL-PLATFORM-INCIDENT": 4,
   "VL-PLATFORM-PRIVILEGED": 5,
   "VL-PLATFORM-LEDGER": 16384,
-  "VL-PLATFORM-BREAK-GLASS": 4
+  "VL-PLATFORM-BREAK-GLASS": 4,
+  "VL-PLATFORM-API-SESSION": 5,
+  "VL-PLATFORM-SIGNER-CEREMONY": 4,
+  "VL-PLATFORM-RESILIENCE": 16384
 });
 
 const ROOT_FIELDS = new Set([

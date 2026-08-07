@@ -23,6 +23,9 @@ VaultLab is a fail-closed, synthetic and sanitized-metadata-only assurance harne
 - sanitized privileged-access assurance for JIT, phishing-resistant MFA, reauthentication, session, SoD, scope, change-window, and dual-approval evidence;
 - an EnteleEXCHANGE ledger-integrity gate with fourteen mandatory controls and exhaustive 16,384-combination testing;
 - forward-only break-glass governance with emergency quorum, immutable time limits, revocation evidence, and independent closure.
+- sanitized API/session assurance for registration, mTLS, request signing, replay, rate, idempotency, revocation, lifetime, and approval evidence;
+- forward-only signer-ceremony governance for HSM/MPC/device-bound quorum evidence without receiving key material;
+- a staging-only resilience gate with fourteen mandatory controls and exhaustive 16,384-combination testing.
 
 ## What it cannot do
 
@@ -43,7 +46,7 @@ npm run policy:assure
 
 `npm run assure` creates a fresh credential and specimen in memory. The report contains control results and a fixture identifier, but no credential or decrypted specimen.
 
-`npm run policy:assure` emits a sanitized nine-gate report for signing, recovery, custody, withdrawal, release provenance, incident governance, privileged access, ledger integrity, and break-glass governance. It exhaustively evaluates 4,096 custody, 16,384 release-provenance, and 16,384 ledger-control combinations and always records `authorityGranted: false`.
+`npm run policy:assure` emits a sanitized twelve-gate report for signing, recovery, custody, withdrawal, release provenance, incident governance, privileged access, ledger integrity, break-glass governance, API/session security, signer ceremonies, and resilience. It exhaustively evaluates 4,096 custody plus 16,384 each for release provenance, ledger integrity, and resilience—53,248 combinations total—and always records `authorityGranted: false`.
 
 Additional gates:
 
@@ -62,7 +65,7 @@ The production-boundary verifier scans production code and configuration while e
 
 Raw EnteleVAULT, EnteleWALLET, and EnteleEXCHANGE production data must never enter VaultLab. A CI or staging job calls VaultLab as an independent test package; it generates its own fixtures, or receives only an exact sanitized policy object, emits a redacted result, and exits. See [INTEGRATION.md](./docs/INTEGRATION.md).
 
-The policy modules consume only sanitized classifications, booleans, counts, pseudonymous identifiers, timestamps, and evidence digests. They produce recommendations only. See [SIGNING_INTENT_GUARD.md](./docs/SIGNING_INTENT_GUARD.md), [RECOVERY_GOVERNANCE.md](./docs/RECOVERY_GOVERNANCE.md), [NATIVE_CUSTODY_READINESS.md](./docs/NATIVE_CUSTODY_READINESS.md), [WITHDRAWAL_POLICY_GUARD.md](./docs/WITHDRAWAL_POLICY_GUARD.md), [RELEASE_PROVENANCE_GATE.md](./docs/RELEASE_PROVENANCE_GATE.md), [INCIDENT_GOVERNANCE.md](./docs/INCIDENT_GOVERNANCE.md), [PRIVILEGED_ACCESS_GUARD.md](./docs/PRIVILEGED_ACCESS_GUARD.md), [LEDGER_INTEGRITY_GATE.md](./docs/LEDGER_INTEGRITY_GATE.md), and [BREAK_GLASS_GOVERNANCE.md](./docs/BREAK_GLASS_GOVERNANCE.md).
+The policy modules consume only sanitized classifications, booleans, counts, pseudonymous identifiers, timestamps, revisions, and evidence digests. They produce recommendations only. See [SIGNING_INTENT_GUARD.md](./docs/SIGNING_INTENT_GUARD.md), [RECOVERY_GOVERNANCE.md](./docs/RECOVERY_GOVERNANCE.md), [NATIVE_CUSTODY_READINESS.md](./docs/NATIVE_CUSTODY_READINESS.md), [WITHDRAWAL_POLICY_GUARD.md](./docs/WITHDRAWAL_POLICY_GUARD.md), [RELEASE_PROVENANCE_GATE.md](./docs/RELEASE_PROVENANCE_GATE.md), [INCIDENT_GOVERNANCE.md](./docs/INCIDENT_GOVERNANCE.md), [PRIVILEGED_ACCESS_GUARD.md](./docs/PRIVILEGED_ACCESS_GUARD.md), [LEDGER_INTEGRITY_GATE.md](./docs/LEDGER_INTEGRITY_GATE.md), [BREAK_GLASS_GOVERNANCE.md](./docs/BREAK_GLASS_GOVERNANCE.md), [API_SESSION_SECURITY.md](./docs/API_SESSION_SECURITY.md), [SIGNER_CEREMONY_GOVERNANCE.md](./docs/SIGNER_CEREMONY_GOVERNANCE.md), and [RESILIENCE_READINESS.md](./docs/RESILIENCE_READINESS.md).
 
 ## Security ownership
 
