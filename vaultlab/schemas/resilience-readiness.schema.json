@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/resilience-readiness.v1.json",
+  "title": "EnteleCLOS resilience and disaster-recovery readiness assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "scope", "evidence", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.resilience-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^resilience_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "const": "staging" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["systemClass", "recoveryTier", "exerciseClass", "dataClass"],
+      "properties": {
+        "systemClass": { "enum": ["wallet", "exchange", "vault", "custody", "identity", "infrastructure"] },
+        "recoveryTier": { "enum": ["tier-0", "tier-1", "tier-2"] },
+        "exerciseClass": { "enum": ["tabletop", "isolated-restore", "failover-rehearsal"] },
+        "dataClass": { "enum": ["encrypted-state", "ledger-state", "configuration", "metadata"] }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planDigest", "backupPolicyDigest", "restoreEvidenceDigest", "dependencyMapDigest", "reconciliationDigest", "exerciseRevision", "recoveryPointClass", "recoveryTimeClass"],
+      "properties": {
+        "planDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "backupPolicyDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "restoreEvidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "dependencyMapDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "reconciliationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "exerciseRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "recoveryPointClass": { "enum": ["within-objective", "outside-objective", "unknown"] },
+        "recoveryTimeClass": { "enum": ["within-objective", "outside-objective", "unknown"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recoveryObjectivesApproved", "backupEncryptionVerified", "backupImmutabilityVerified", "geographicSeparationVerified", "leastPrivilegeRestoreAccessVerified", "ransomwareIsolationVerified", "backupIntegrityVerified", "restoreRehearsalPassed", "dependencyRestoreOrderTested", "queueReplayAndIdempotencyTested", "ledgerReconciliationPassed", "failoverAndFailbackTested", "monitoringAndAlertingTested", "independentReviewApproved"],
+      "properties": {
+        "recoveryObjectivesApproved": { "type": "boolean" },
+        "backupEncryptionVerified": { "type": "boolean" },
+        "backupImmutabilityVerified": { "type": "boolean" },
+        "geographicSeparationVerified": { "type": "boolean" },
+        "leastPrivilegeRestoreAccessVerified": { "type": "boolean" },
+        "ransomwareIsolationVerified": { "type": "boolean" },
+        "backupIntegrityVerified": { "type": "boolean" },
+        "restoreRehearsalPassed": { "type": "boolean" },
+        "dependencyRestoreOrderTested": { "type": "boolean" },
+        "queueReplayAndIdempotencyTested": { "type": "boolean" },
+        "ledgerReconciliationPassed": { "type": "boolean" },
+        "failoverAndFailbackTested": { "type": "boolean" },
+        "monitoringAndAlertingTested": { "type": "boolean" },
+        "independentReviewApproved": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "mediumOpen", "unreconciledItems"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "mediumOpen": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "unreconciledItems": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

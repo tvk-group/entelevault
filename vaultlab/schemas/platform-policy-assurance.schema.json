@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://enteleclos.com/schemas/platform-policy-assurance.v3.json",
+  "$id": "https://enteleclos.com/schemas/platform-policy-assurance.v4.json",
   "title": "EnteleCLOS platform policy assurance report",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "generatedAt", "scope", "result", "authorityGranted", "summary", "checks"],
   "properties": {
-    "schema": { "const": "enteleclos.platform-policy-assurance.v3" },
+    "schema": { "const": "enteleclos.platform-policy-assurance.v4" },
     "generatedAt": { "type": "string", "format": "date-time" },
     "scope": { "const": "sanitized-metadata-only" },
     "result": { "enum": ["PASS", "FAIL"] },
@@ -18,13 +18,13 @@
       "properties": {
         "passed": { "type": "integer", "minimum": 0 },
         "failed": { "type": "integer", "minimum": 0 },
-        "total": { "const": 9 }
+        "total": { "const": 12 }
       }
     },
     "checks": {
       "type": "array",
-      "minItems": 9,
-      "maxItems": 9,
+      "minItems": 12,
+      "maxItems": 12,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -40,7 +40,10 @@
               "VL-PLATFORM-INCIDENT",
               "VL-PLATFORM-PRIVILEGED",
               "VL-PLATFORM-LEDGER",
-              "VL-PLATFORM-BREAK-GLASS"
+              "VL-PLATFORM-BREAK-GLASS",
+              "VL-PLATFORM-API-SESSION",
+              "VL-PLATFORM-SIGNER-CEREMONY",
+              "VL-PLATFORM-RESILIENCE"
             ]
           },
           "status": { "enum": ["PASS", "FAIL"] },

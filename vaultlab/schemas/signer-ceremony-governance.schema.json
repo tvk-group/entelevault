@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/signer-ceremony-governance.v1.json",
+  "title": "EnteleVAULT signer-ceremony governance case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "ceremonyId", "phase", "openedAt", "lastTransitionAt", "environment", "architecture", "controls", "approvals", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "entelevault.signer-ceremony-governance.v1" },
+    "ceremonyId": { "type": "string", "pattern": "^ceremony_[0-9a-f]{32}$" },
+    "phase": { "enum": ["planned", "participants-verified", "environment-attested", "quorum-rehearsed", "evidence-sealed", "independently-reviewed", "closed"] },
+    "openedAt": { "type": "string", "format": "date-time" },
+    "lastTransitionAt": { "type": "string", "format": "date-time" },
+    "environment": { "const": "staging" },
+    "architecture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signerModel", "thresholdClass", "exportPolicy", "networkClass"],
+      "properties": {
+        "signerModel": { "enum": ["certified-hsm-quorum", "mpc-quorum", "device-bound-quorum"] },
+        "thresholdClass": { "enum": ["two-of-three", "three-of-five", "policy-defined"] },
+        "exportPolicy": { "const": "prohibited" },
+        "networkClass": { "enum": ["isolated", "restricted"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ceremonyPlanApproved", "participantIndependenceVerified", "participantIdentityAttested", "separationOfDutiesVerified", "environmentIsolationVerified", "deviceAttestationVerified", "entropySourceReviewCompleted", "backupPolicyReviewed", "quorumFailureTested", "abortProcedureTested", "tamperEvidenceVerified", "transcriptDigestSealed", "independentReviewApproved"],
+      "properties": {
+        "ceremonyPlanApproved": { "type": "boolean" },
+        "participantIndependenceVerified": { "type": "boolean" },
+        "participantIdentityAttested": { "type": "boolean" },
+        "separationOfDutiesVerified": { "type": "boolean" },
+        "environmentIsolationVerified": { "type": "boolean" },
+        "deviceAttestationVerified": { "type": "boolean" },
+        "entropySourceReviewCompleted": { "type": "boolean" },
+        "backupPolicyReviewed": { "type": "boolean" },
+        "quorumFailureTested": { "type": "boolean" },
+        "abortProcedureTested": { "type": "boolean" },
+        "tamperEvidenceVerified": { "type": "boolean" },
+        "transcriptDigestSealed": { "type": "boolean" },
+        "independentReviewApproved": { "type": "boolean" }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "approverId", "approvedAt", "attestationDigest"],
+        "properties": {
+          "role": { "enum": ["security", "custody", "operations", "compliance", "independent-review"] },
+          "approverId": { "type": "string", "pattern": "^approver_[0-9a-f]{16}$" },
+          "approvedAt": { "type": "string", "format": "date-time" },
+          "attestationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "mediumOpen"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "mediumOpen": { "type": "integer", "minimum": 0, "maximum": 1000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

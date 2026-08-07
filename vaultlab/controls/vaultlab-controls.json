@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-5",
+  "catalogId": "ENTELE-VAULTLAB-6",
   "status": "draft",
   "controls": [
     {
@@ -168,6 +168,42 @@
     {
       "id": "VL-BREAKGLASS-002",
       "title": "Break-glass records cannot grant access, start sessions, execute revocation, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-API-001",
+      "title": "API and session policy rejects raw secrets, tokens, credentials, keys, payloads, identities, addresses, signatures, and transactions",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-API-002",
+      "title": "API and session decisions enforce registration, least privilege, mTLS, request signing, replay, rate, idempotency, revocation, lifetime, and approval evidence without executing requests",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-CEREMONY-001",
+      "title": "Signer-ceremony governance preserves architecture, forward-only phases, three-role quorum, monotonic controls, append-only approvals, sealed evidence, and independent review",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-CEREMONY-002",
+      "title": "Signer-ceremony inputs reject shares, keys, seeds, entropy values, transcript content, credentials, signatures, and commands and cannot activate a signer",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-RESILIENCE-001",
+      "title": "Resilience readiness requires all fourteen backup, isolation, integrity, restore, replay, reconciliation, failover, monitoring, and independent-review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-RESILIENCE-002",
+      "title": "Resilience evidence contains digests and classifications only and cannot restore, fail over, mutate data, deploy, sign, or move assets",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }

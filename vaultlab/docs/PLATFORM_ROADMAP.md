@@ -33,6 +33,8 @@ VaultLab v0.4 adds release provenance and incident governance across wallet, exc
 
 VaultLab v0.5 adds privileged-access and break-glass governance evidence. It cannot authenticate users, grant access, start sessions, run commands, or execute revocation.
 
+VaultLab v0.6 adds API/session policy and signer-ceremony governance. It cannot authenticate clients, execute requests, submit orders, run ceremonies, generate keys, activate signers, or export key material.
+
 ## Phase 3 — exchange and custody assurance
 
 - hot/warm/cold custody policy with quantitative exposure limits;
@@ -47,6 +49,8 @@ The v0.3 native-custody readiness gate makes twelve prerequisite controls releas
 The v0.4 withdrawal guard evaluates sanitized risk classes and always hands off to a separate human-controlled authorization service. It has no hold, withdrawal, signing, or asset authority.
 
 The v0.5 ledger-integrity gate exhaustively evaluates fourteen controls. Eligibility starts an independent financial-control review; it is not proof of reserves, proof of solvency, an audit opinion, or authority to mutate balances, trade, withdraw, sign, or move assets.
+
+The v0.6 resilience gate exhaustively evaluates fourteen staging controls. Eligibility starts an independent resilience review; it cannot read backups, restore, fail over, replay production data, mutate state, deploy, sign, or move assets.
 
 ## Phase 4 — continuous adversarial assurance
 

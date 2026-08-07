@@ -45,6 +45,22 @@ import {
   evaluateBreakGlassCase,
   validateBreakGlassTransition
 } from "./break-glass-governance.mjs";
+import {
+  API_SESSION_SCHEMA,
+  evaluateApiSessionRequest,
+  validateApiSessionRequest
+} from "./api-session-security.mjs";
+import {
+  evaluateSignerCeremony,
+  SIGNER_CEREMONY_CONTROL_FIELDS,
+  SIGNER_CEREMONY_SCHEMA,
+  validateSignerCeremonyTransition
+} from "./signer-ceremony-governance.mjs";
+import {
+  evaluateResilienceReadiness,
+  REQUIRED_RESILIENCE_CONTROLS,
+  RESILIENCE_READINESS_SCHEMA
+} from "./resilience-readiness.mjs";
 
 const AUTHORITY_FIELDS = Object.freeze([
   "executionAuthorized",
@@ -62,7 +78,15 @@ const AUTHORITY_FIELDS = Object.freeze([
   "balanceMutationAuthorized",
   "tradingAuthorized",
   "sessionStartAuthorized",
-  "revocationExecutionAuthorized"
+  "revocationExecutionAuthorized",
+  "requestExecutionAuthorized",
+  "ceremonyExecutionAuthorized",
+  "signerActivationAuthorized",
+  "keyGenerationAuthorized",
+  "keyExportAuthorized",
+  "restorationAuthorized",
+  "failoverAuthorized",
+  "dataMutationAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -388,6 +412,132 @@ function breakGlassCase(overrides = {}) {
   };
 }
 
+function apiSessionRequest(overrides = {}) {
+  const base = {
+    schema: API_SESSION_SCHEMA,
+    requestId: "apireq_0123456789abcdef0123456789abcdef",
+    observedAt: "2026-08-07T00:00:00.000Z",
+    environment: "ci",
+    client: {
+      clientClass: "first-party-service",
+      registrationStatus: "approved",
+      authMaterialAgeClass: "current",
+      scopeClass: "read-only",
+      ownerStatus: "active"
+    },
+    session: {
+      assurance: "mutual-tls",
+      deviceTrust: "attested",
+      networkTrust: "private",
+      ageMinutes: 5,
+      anomalyClass: "none"
+    },
+    request: {
+      operationClass: "read",
+      riskClass: "low",
+      replayStatus: "fresh",
+      originStatus: "allowlisted",
+      rateClass: "normal"
+    },
+    controls: {
+      clientRegistrationVerified: true,
+      leastPrivilegeVerified: true,
+      mutualTlsRequired: true,
+      mutualTlsSatisfied: true,
+      requestSignatureRequired: false,
+      requestSignatureVerified: false,
+      nonceVerified: true,
+      timestampWindowVerified: true,
+      rateLimitApplied: true,
+      schemaValidated: true,
+      idempotencyVerified: true,
+      sessionRevocationChecked: true,
+      maxSessionAgeMinutes: 30,
+      dualApprovalRequired: false,
+      dualApprovalSatisfied: false
+    },
+    evidenceDigest: "6".repeat(64)
+  };
+  return {
+    ...base,
+    ...overrides,
+    client: { ...base.client, ...(overrides.client ?? {}) },
+    session: { ...base.session, ...(overrides.session ?? {}) },
+    request: { ...base.request, ...(overrides.request ?? {}) },
+    controls: { ...base.controls, ...(overrides.controls ?? {}) }
+  };
+}
+
+function signerCeremonyApproval(role, marker) {
+  return {
+    role,
+    approverId: `approver_${marker.repeat(16)}`,
+    approvedAt: "2026-08-10T00:00:00.000Z",
+    attestationDigest: marker.repeat(64)
+  };
+}
+
+function signerCeremony(overrides = {}) {
+  const base = {
+    schema: SIGNER_CEREMONY_SCHEMA,
+    ceremonyId: "ceremony_0123456789abcdef0123456789abcdef",
+    phase: "independently-reviewed",
+    openedAt: "2026-08-07T00:00:00.000Z",
+    lastTransitionAt: "2026-08-10T00:00:00.000Z",
+    environment: "staging",
+    architecture: {
+      signerModel: "mpc-quorum",
+      thresholdClass: "three-of-five",
+      exportPolicy: "prohibited",
+      networkClass: "isolated"
+    },
+    controls: Object.fromEntries(SIGNER_CEREMONY_CONTROL_FIELDS.map((control) => [control, true])),
+    approvals: [
+      signerCeremonyApproval("security", "1"),
+      signerCeremonyApproval("custody", "2"),
+      signerCeremonyApproval("operations", "3"),
+      signerCeremonyApproval("independent-review", "4")
+    ],
+    findings: { criticalOpen: 0, highOpen: 0, mediumOpen: 0 },
+    evidenceDigest: "7".repeat(64)
+  };
+  return {
+    ...base,
+    ...overrides,
+    architecture: { ...base.architecture, ...(overrides.architecture ?? {}) },
+    controls: { ...base.controls, ...(overrides.controls ?? {}) },
+    findings: { ...base.findings, ...(overrides.findings ?? {}) }
+  };
+}
+
+function resilienceAssessment(controls) {
+  return {
+    schema: RESILIENCE_READINESS_SCHEMA,
+    assessmentId: "resilience_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-07T00:00:00.000Z",
+    environment: "staging",
+    scope: {
+      systemClass: "exchange",
+      recoveryTier: "tier-0",
+      exerciseClass: "failover-rehearsal",
+      dataClass: "ledger-state"
+    },
+    evidence: {
+      planDigest: "1".repeat(64),
+      backupPolicyDigest: "2".repeat(64),
+      restoreEvidenceDigest: "3".repeat(64),
+      dependencyMapDigest: "4".repeat(64),
+      reconciliationDigest: "5".repeat(64),
+      exerciseRevision: "6".repeat(40),
+      recoveryPointClass: "within-objective",
+      recoveryTimeClass: "within-objective"
+    },
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, mediumOpen: 0, unreconciledItems: 0 },
+    evidenceDigest: "8".repeat(64)
+  };
+}
+
 function result(id, evaluatedCases, passed) {
   return { id, status: passed ? "PASS" : "FAIL", evaluatedCases };
 }
@@ -616,6 +766,80 @@ function assureBreakGlassGovernance() {
   return result("VL-PLATFORM-BREAK-GLASS", 4, passed);
 }
 
+function assureApiSessionSecurity() {
+  const decisions = [
+    evaluateApiSessionRequest(apiSessionRequest()),
+    evaluateApiSessionRequest(apiSessionRequest({ client: { registrationStatus: "revoked" } })),
+    evaluateApiSessionRequest(apiSessionRequest({ session: { anomalyClass: "elevated" } })),
+    evaluateApiSessionRequest(apiSessionRequest({ request: { replayStatus: "replayed" } }))
+  ];
+  let prohibitedRejected = false;
+  try {
+    validateApiSessionRequest(apiSessionRequest({ accessToken: "prohibited" }));
+  } catch (error) {
+    prohibitedRejected = error?.code === "API_SESSION_PROHIBITED_FIELD";
+  }
+  const passed =
+    decisions[0].recommendation === "PROCEED_TO_SEPARATE_API_AUTHORIZATION" &&
+    decisions[1].recommendation === "BLOCK_AND_ESCALATE" &&
+    decisions[2].recommendation === "REQUIRE_HUMAN_API_RISK_REVIEW" &&
+    decisions[3].recommendation === "BLOCK_AND_ESCALATE" &&
+    decisions.every((decision) => !grantsAuthority(decision)) &&
+    prohibitedRejected;
+  return result("VL-PLATFORM-API-SESSION", decisions.length + 1, passed);
+}
+
+function assureSignerCeremonyGovernance() {
+  const reviewed = evaluateSignerCeremony(signerCeremony());
+  const blocked = evaluateSignerCeremony(signerCeremony({ findings: { mediumOpen: 1 } }));
+  const closed = signerCeremony({
+    phase: "closed",
+    lastTransitionAt: "2026-08-10T01:00:00.000Z"
+  });
+  const transition = validateSignerCeremonyTransition(signerCeremony(), closed);
+  let architectureChangeRejected = false;
+  try {
+    validateSignerCeremonyTransition(
+      signerCeremony(),
+      signerCeremony({
+        phase: "closed",
+        lastTransitionAt: "2026-08-10T01:00:00.000Z",
+        architecture: { thresholdClass: "two-of-three" }
+      })
+    );
+  } catch (error) {
+    architectureChangeRejected = error?.code === "SIGNER_CEREMONY_TRANSITION_IDENTITY_REJECTED";
+  }
+  const passed =
+    reviewed.recommendation === "READY_FOR_SEPARATE_CEREMONY_AUTHORIZATION" &&
+    blocked.recommendation === "ACTIVE_CEREMONY_GOVERNANCE_REQUIRED" &&
+    transition.accepted &&
+    !grantsAuthority(reviewed) &&
+    !grantsAuthority(blocked) &&
+    !grantsAuthority(transition) &&
+    architectureChangeRejected;
+  return result("VL-PLATFORM-SIGNER-CEREMONY", 4, passed);
+}
+
+function assureResilienceReadiness() {
+  const total = 1 << REQUIRED_RESILIENCE_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(
+      REQUIRED_RESILIENCE_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))])
+    );
+    const decision = evaluateResilienceReadiness(resilienceAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_RESILIENCE_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_RESILIENCE_REVIEW")) {
+      return result("VL-PLATFORM-RESILIENCE", total, false);
+    }
+  }
+  return result("VL-PLATFORM-RESILIENCE", total, eligible === 1 && !authorityGranted);
+}
+
 export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOString() } = {}) {
   if (typeof generatedAt !== "string" || Number.isNaN(Date.parse(generatedAt))) {
     throw new TypeError("generatedAt must be an ISO-compatible date-time");
@@ -629,11 +853,14 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureIncidentGovernance(),
     assurePrivilegedAccess(),
     assureLedgerIntegrity(),
-    assureBreakGlassGovernance()
+    assureBreakGlassGovernance(),
+    assureApiSessionSecurity(),
+    assureSignerCeremonyGovernance(),
+    assureResilienceReadiness()
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v3",
+    schema: "enteleclos.platform-policy-assurance.v4",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

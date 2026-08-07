@@ -24,6 +24,9 @@ This model separates assurance testing from production custody. VaultLab covers 
 | Privileged access | dormant account, session theft, SoD conflict, standing privilege, or unapproved change | active-status classification, phishing-resistant MFA, reauthentication, JIT, ticket binding, bounded session, dual approval | VaultLab privileged-access tests + IAM assessment |
 | Exchange ledger | incomplete liabilities, reconciliation drift, commingling, replay, or stale reserve evidence | double entry, segregation, complete snapshots, reconciliations, reviewed method, independent attestation, alert and replay tests | exhaustive VaultLab ledger gate + independent financial audit |
 | Emergency access | bypassed quorum, unlimited session, missing monitoring, or premature closure | authority evidence, three-role quorum, 60-minute ceiling, recording, monitoring, automatic revocation, sealed evidence, independent closure | VaultLab break-glass state machine + emergency exercise |
+| API and sessions | stolen token, overbroad scope, replay, unsigned write, revoked client, or rate abuse | registration, least privilege, mTLS, request signing, nonce/time window, rate limit, idempotency, revocation check, dual approval | VaultLab API/session tests + API penetration test |
+| Signer ceremony | colluding participants, unsafe environment, exportable material, weak quorum, unsealed transcript, or premature approval | immutable architecture, prohibited export, participant independence, isolation, attestation, quorum rehearsal, sealed digest, independent review | VaultLab ceremony state machine + external HSM/MPC assessment |
+| Resilience | corrupt or mutable backups, ransomware propagation, dependency-order failure, replay duplication, unreconciled restore, or failed failback | encrypted immutable backups, isolation, integrity, rehearsal, idempotency, reconciliation, failover/failback, monitoring, independent review | exhaustive VaultLab resilience gate + isolated recovery exercise |
 | Availability | DDoS, queue exhaustion, market volatility | WAF, rate limits, circuit breakers, backpressure, tested recovery | load/chaos testing and incident exercises |
 
 ## Security agents to build safely
@@ -39,5 +42,8 @@ This model separates assurance testing from production custody. VaultLab covers 
 9. Privileged Access Guard — validates sanitized JIT, session, SoD, scope, change-window, and approval evidence; it cannot grant access.
 10. Ledger Integrity Agent — validates digest-only reconciliation and control evidence; it cannot claim solvency or mutate exchange state.
 11. Break-Glass Governance Agent — validates emergency quorum, timing, revocation, and closure evidence; it cannot start a session or execute commands.
+12. API Session Guard — validates client, session, replay, rate, scope, signature, and revocation evidence; it cannot execute requests or submit orders.
+13. Signer Ceremony Agent — validates forward-only HSM/MPC ceremony evidence; it never receives shares and cannot generate keys or activate signers.
+14. Resilience Readiness Agent — validates digest-only recovery evidence; it cannot read backups, restore, fail over, or mutate state.
 
 No agent receives unilateral custody authority. Recommendations and detections are separated from signing and asset movement.
