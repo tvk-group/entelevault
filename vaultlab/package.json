@@ -1,12 +1,13 @@
 {
   "name": "@enteleclos/vaultlab",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "Synthetic-only cryptographic assurance harness for EnteleVAULT",
+  "description": "Synthetic-only cryptographic, signing-policy, recovery-governance, and custody-readiness assurance for EnteleVAULT",
   "type": "module",
   "scripts": {
     "assure": "node ./bin/vaultlab.mjs assess",
     "evidence": "node ./bin/create-evidence-envelope.mjs",
+    "policy:assure": "node ./bin/platform-policy-assurance.mjs",
     "validate:report": "node ./bin/validate-report.mjs vaultlab-assurance-report.json",
     "verify:production-boundary": "node ./bin/verify-production-boundary.mjs",
     "test": "node --test",

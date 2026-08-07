@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/signing-intent.v1.json",
+  "title": "EnteleWALLET sanitized signing intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "requestId",
+    "observedAt",
+    "environment",
+    "network",
+    "intent",
+    "policy",
+    "evidenceDigest"
+  ],
+  "properties": {
+    "schema": { "const": "entelewallet.signing-intent.v1" },
+    "requestId": { "type": "string", "pattern": "^req_[0-9a-f]{32}$" },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["ci", "staging", "production-observation"] },
+    "network": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "chainReference"],
+      "properties": {
+        "family": { "enum": ["bitcoin", "evm", "solana"] },
+        "chainReference": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9:-]{1,63}$"
+        }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "assetClass",
+        "amountClass",
+        "destinationTrust",
+        "decoded",
+        "simulation",
+        "unlimitedApproval",
+        "valueDirection",
+        "riskScore"
+      ],
+      "properties": {
+        "operation": {
+          "enum": ["approval", "contract-call", "message", "network-switch", "transfer", "typed-data"]
+        },
+        "assetClass": { "enum": ["fungible", "native", "nft", "not-applicable", "unknown"] },
+        "amountClass": { "enum": ["bounded", "not-applicable", "unbounded", "zero"] },
+        "destinationTrust": { "enum": ["allowlisted", "blocked", "known", "new", "not-applicable"] },
+        "decoded": { "type": "boolean" },
+        "simulation": { "enum": ["match", "mismatch", "not-applicable", "unavailable"] },
+        "unlimitedApproval": { "type": "boolean" },
+        "valueDirection": { "enum": ["credit", "debit", "mixed", "none", "unknown"] },
+        "riskScore": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requireDecoded",
+        "requireSimulation",
+        "maxRiskScore",
+        "allowUnlimitedApproval",
+        "allowNewDestination"
+      ],
+      "properties": {
+        "requireDecoded": { "type": "boolean" },
+        "requireSimulation": { "type": "boolean" },
+        "maxRiskScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "allowUnlimitedApproval": { "type": "boolean" },
+        "allowNewDestination": { "type": "boolean" }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

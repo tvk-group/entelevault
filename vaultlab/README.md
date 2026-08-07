@@ -14,6 +14,9 @@ VaultLab is a fail-closed, synthetic-only cryptographic assurance harness for En
 - proof that production source does not import VaultLab or contain fixture markers;
 - revision-bound evidence envelopes for ChronoSeal/GraphVAULT publication;
 - recommendation-only security-agent decisions with no signing, execution, or asset authority.
+- sanitized signing-intent policy that blocks unsafe classifications without receiving raw transactions;
+- append-only recovery governance with independent legal, security, and custody quorum;
+- a staging-only native-custody readiness gate with exhaustive 12-control evaluation.
 
 ## What it cannot do
 
@@ -29,9 +32,12 @@ Requirements: Node.js 22 or later.
 npm ci
 npm test
 npm run assure
+npm run policy:assure
 ```
 
 `npm run assure` creates a fresh credential and specimen in memory. The report contains control results and a fixture identifier, but no credential or decrypted specimen.
+
+`npm run policy:assure` emits a sanitized report for the signing, recovery, and custody gates. It exhaustively evaluates all 4,096 custody-control combinations and always records `authorityGranted: false`.
 
 Additional gates:
 
@@ -47,6 +53,8 @@ The production-boundary verifier scans production code and configuration while e
 ## Integration rule
 
 EnteleVAULT production data must never enter VaultLab. A CI or staging job calls VaultLab as an independent test package; it generates its own fixtures, exercises the provider's defensive contract, emits a redacted result, and exits. See [INTEGRATION.md](./docs/INTEGRATION.md).
+
+The policy modules consume only sanitized classifications, booleans, counts, pseudonymous identifiers, timestamps, and evidence digests. They produce recommendations only. See [SIGNING_INTENT_GUARD.md](./docs/SIGNING_INTENT_GUARD.md), [RECOVERY_GOVERNANCE.md](./docs/RECOVERY_GOVERNANCE.md), and [NATIVE_CUSTODY_READINESS.md](./docs/NATIVE_CUSTODY_READINESS.md).
 
 ## Security ownership
 

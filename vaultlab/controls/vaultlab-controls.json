@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-2",
+  "catalogId": "ENTELE-VAULTLAB-3",
   "status": "draft",
   "controls": [
     {
@@ -62,6 +62,42 @@
       "title": "Evidence envelopes bind a passing report to an exact source revision",
       "releaseImpact": "blocking",
       "evidence": "evidence-envelope"
+    },
+    {
+      "id": "VL-SIGN-001",
+      "title": "Signing-intent policy accepts sanitized classifications and rejects transaction or secret material",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-SIGN-002",
+      "title": "Signing-intent decisions require a human and never grant signing or execution authority",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-RECOVERY-001",
+      "title": "Recovery requires independent legal, security, and custody approval",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-RECOVERY-002",
+      "title": "Recovery transitions preserve authority, approvals, waiting policy, notifications, and finding gates",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-CUSTODY-001",
+      "title": "Native-custody readiness requires all twelve controls and zero critical or high findings",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-CUSTODY-002",
+      "title": "Native-custody assessment is staging-only and cannot activate deployment, signing, or asset movement",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
     }
   ],
   "baselineMappings": [

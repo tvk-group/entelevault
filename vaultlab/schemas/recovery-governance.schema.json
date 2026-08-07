@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/recovery-governance.v1.json",
+  "title": "EnteleCLOS recovery governance case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "caseId",
+    "phase",
+    "openedAt",
+    "lastTransitionAt",
+    "environment",
+    "authority",
+    "approvals",
+    "waitingPeriod",
+    "notifications",
+    "findings",
+    "evidenceDigest"
+  ],
+  "properties": {
+    "schema": { "const": "enteleclos.recovery-governance.v1" },
+    "caseId": { "type": "string", "pattern": "^case_[0-9a-f]{32}$" },
+    "phase": {
+      "enum": [
+        "intake",
+        "authority-verified",
+        "cooling-period",
+        "quorum-approved",
+        "migration-prepared",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "openedAt": { "type": "string", "format": "date-time" },
+    "lastTransitionAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified", "subjectMatch", "scopeApproved", "counselReviewed"],
+      "properties": {
+        "verified": { "type": "boolean" },
+        "subjectMatch": { "type": "boolean" },
+        "scopeApproved": { "type": "boolean" },
+        "counselReviewed": { "type": "boolean" }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "approverId", "approvedAt", "attestationDigest"],
+        "properties": {
+          "role": { "enum": ["custody", "legal", "privacy", "security"] },
+          "approverId": { "type": "string", "pattern": "^approver_[0-9a-f]{16}$" },
+          "approvedAt": { "type": "string", "format": "date-time" },
+          "attestationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "waitingPeriod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredHours", "elapsedHours", "emergencyOverride"],
+      "properties": {
+        "requiredHours": { "type": "integer", "minimum": 24, "maximum": 720 },
+        "elapsedHours": { "type": "integer", "minimum": 0, "maximum": 8760 },
+        "emergencyOverride": { "type": "boolean" }
+      }
+    },
+    "notifications": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requesterNotified", "securityNotified", "custodyNotified"],
+      "properties": {
+        "requesterNotified": { "type": "boolean" },
+        "securityNotified": { "type": "boolean" },
+        "custodyNotified": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}
