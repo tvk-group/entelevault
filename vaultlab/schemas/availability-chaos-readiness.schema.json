@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/availability-chaos-readiness.v1.json",
+  "title": "EnteleCLOS isolated availability and chaos readiness evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "systemClass", "scenarioClass", "policyRevision", "topologyDigest", "exerciseDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.availability-chaos-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^availability_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["isolated-test", "staging"] },
+    "systemClass": { "enum": ["wallet", "exchange", "custody", "vault", "identity", "infrastructure"] },
+    "scenarioClass": { "enum": ["ddos-surge", "queue-exhaustion", "dependency-failure", "regional-failover", "market-volatility", "signer-unavailable"] },
+    "policyRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "topologyDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "exerciseDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["isolatedEnvironmentVerified", "syntheticTrafficOnlyVerified", "blastRadiusBounded", "rateLimitsVerified", "backpressureVerified", "queueBoundsVerified", "circuitBreakersVerified", "loadSheddingVerified", "degradedModeVerified", "dependencyTimeoutsVerified", "failoverRehearsed", "recoveryObjectivesMet", "observabilityVerified", "independentReviewComplete"],
+      "properties": {
+        "isolatedEnvironmentVerified": { "type": "boolean" },
+        "syntheticTrafficOnlyVerified": { "type": "boolean" },
+        "blastRadiusBounded": { "type": "boolean" },
+        "rateLimitsVerified": { "type": "boolean" },
+        "backpressureVerified": { "type": "boolean" },
+        "queueBoundsVerified": { "type": "boolean" },
+        "circuitBreakersVerified": { "type": "boolean" },
+        "loadSheddingVerified": { "type": "boolean" },
+        "degradedModeVerified": { "type": "boolean" },
+        "dependencyTimeoutsVerified": { "type": "boolean" },
+        "failoverRehearsed": { "type": "boolean" },
+        "recoveryObjectivesMet": { "type": "boolean" },
+        "observabilityVerified": { "type": "boolean" },
+        "independentReviewComplete": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "availabilityBreaches", "unrecoveredDependencies", "dataIntegrityMismatches"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "availabilityBreaches": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "unrecoveredDependencies": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "dataIntegrityMismatches": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

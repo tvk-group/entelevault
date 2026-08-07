@@ -77,6 +77,21 @@ import {
   SECURITY_EXCEPTION_SCHEMA,
   validateSecurityExceptionTransition
 } from "./security-exception-governance.mjs";
+import {
+  CLIENT_INTEGRITY_SCHEMA,
+  evaluateClientIntegrity,
+  REQUIRED_CLIENT_INTEGRITY_CONTROLS
+} from "./client-integrity-readiness.mjs";
+import {
+  evaluateMarketDataIntegrity,
+  MARKET_DATA_INTEGRITY_SCHEMA,
+  REQUIRED_MARKET_DATA_CONTROLS
+} from "./market-data-integrity-readiness.mjs";
+import {
+  AVAILABILITY_CHAOS_SCHEMA,
+  evaluateAvailabilityReadiness,
+  REQUIRED_AVAILABILITY_CONTROLS
+} from "./availability-chaos-readiness.mjs";
 
 const AUTHORITY_FIELDS = Object.freeze([
   "executionAuthorized",
@@ -110,7 +125,17 @@ const AUTHORITY_FIELDS = Object.freeze([
   "auditDeleteAuthorized",
   "logAccessAuthorized",
   "exceptionGrantAuthorized",
-  "policyBypassAuthorized"
+  "policyBypassAuthorized",
+  "clientActivationAuthorized",
+  "distributionAuthorized",
+  "updateExecutionAuthorized",
+  "deviceAccessAuthorized",
+  "keyStorageAuthorized",
+  "pricePublicationAuthorized",
+  "orderExecutionAuthorized",
+  "riskLimitMutationAuthorized",
+  "trafficGenerationAuthorized",
+  "chaosExecutionAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -668,6 +693,57 @@ function securityExceptionCase(overrides = {}) {
   };
 }
 
+function clientIntegrityAssessment(controls) {
+  return {
+    schema: CLIENT_INTEGRITY_SCHEMA,
+    assessmentId: "client_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-08T00:00:00.000Z",
+    environment: "staging",
+    clientClass: "wallet-mobile",
+    platformClass: "android",
+    buildRevision: "2".repeat(40),
+    binaryDigest: "3".repeat(64),
+    attestationPolicyDigest: "4".repeat(64),
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, attestationFailures: 0, integrityMismatches: 0, unsignedBuilds: 0 },
+    evidenceDigest: "5".repeat(64)
+  };
+}
+
+function marketDataAssessment(controls) {
+  return {
+    schema: MARKET_DATA_INTEGRITY_SCHEMA,
+    assessmentId: "market_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-08T00:00:00.000Z",
+    environment: "staging",
+    marketClass: "spot",
+    feedClass: "consolidated",
+    policyRevision: "6".repeat(40),
+    observationDigest: "7".repeat(64),
+    quorumDigest: "8".repeat(64),
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, staleObservations: 0, divergentObservations: 0, sequenceGaps: 0 },
+    evidenceDigest: "9".repeat(64)
+  };
+}
+
+function availabilityAssessment(controls) {
+  return {
+    schema: AVAILABILITY_CHAOS_SCHEMA,
+    assessmentId: "availability_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-08T00:00:00.000Z",
+    environment: "isolated-test",
+    systemClass: "exchange",
+    scenarioClass: "queue-exhaustion",
+    policyRevision: "a".repeat(40),
+    topologyDigest: "b".repeat(64),
+    exerciseDigest: "c".repeat(64),
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, availabilityBreaches: 0, unrecoveredDependencies: 0, dataIntegrityMismatches: 0 },
+    evidenceDigest: "d".repeat(64)
+  };
+}
+
 function result(id, evaluatedCases, passed) {
   return { id, status: passed ? "PASS" : "FAIL", evaluatedCases };
 }
@@ -1051,6 +1127,51 @@ function assureSecurityExceptionGovernance() {
   return result("VL-PLATFORM-SECURITY-EXCEPTION", 4, passed);
 }
 
+function assureClientIntegrity() {
+  const total = 1 << REQUIRED_CLIENT_INTEGRITY_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_CLIENT_INTEGRITY_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateClientIntegrity(clientIntegrityAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_CLIENT_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_CLIENT_REVIEW")) return result("VL-PLATFORM-CLIENT-INTEGRITY", total, false);
+  }
+  return result("VL-PLATFORM-CLIENT-INTEGRITY", total, eligible === 1 && !authorityGranted);
+}
+
+function assureMarketDataIntegrity() {
+  const total = 1 << REQUIRED_MARKET_DATA_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_MARKET_DATA_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateMarketDataIntegrity(marketDataAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_MARKET_DATA_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_MARKET_DATA_REVIEW")) return result("VL-PLATFORM-MARKET-DATA", total, false);
+  }
+  return result("VL-PLATFORM-MARKET-DATA", total, eligible === 1 && !authorityGranted);
+}
+
+function assureAvailabilityReadiness() {
+  const total = 1 << REQUIRED_AVAILABILITY_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_AVAILABILITY_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateAvailabilityReadiness(availabilityAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_AVAILABILITY_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_AVAILABILITY_REVIEW")) return result("VL-PLATFORM-AVAILABILITY", total, false);
+  }
+  return result("VL-PLATFORM-AVAILABILITY", total, eligible === 1 && !authorityGranted);
+}
+
 export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOString() } = {}) {
   if (typeof generatedAt !== "string" || Number.isNaN(Date.parse(generatedAt))) {
     throw new TypeError("generatedAt must be an ISO-compatible date-time");
@@ -1070,11 +1191,14 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureResilienceReadiness(),
     assureSecretLeakage(),
     assureAuditIntegrity(),
-    assureSecurityExceptionGovernance()
+    assureSecurityExceptionGovernance(),
+    assureClientIntegrity(),
+    assureMarketDataIntegrity(),
+    assureAvailabilityReadiness()
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v5",
+    schema: "enteleclos.platform-policy-assurance.v6",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

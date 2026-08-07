@@ -34,6 +34,9 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - a twelve-control secret-leakage gate with all 4,096 combinations tested and no access to scanned content;
 - a fourteen-control immutable-audit gate with all 16,384 combinations tested and no log-read, write, or deletion authority;
 - forward-only, time-bounded security-exception governance with no critical-risk waivers or policy-bypass authority.
+- a fourteen-control wallet/exchange client-integrity gate for signed builds, runtime attestation, anti-tamper, and secure updates;
+- a fourteen-control exchange market-data integrity gate for source quorum, freshness, outliers, replay, failover, and circuit breakers;
+- an isolated availability/chaos gate that rejects production exercises, operational targets, traffic payloads, and execution authority.
 
 VaultLab never receives raw production data. It runs in an isolated CI/staging test cell; production-observation policy calls contain only exact sanitized metadata and evidence digests. VaultLab produces redacted assurance results and is excluded from production bundles.
 
@@ -68,6 +71,9 @@ See:
 - [Secret-leakage assurance](./vaultlab/docs/SECRET_LEAKAGE_ASSURANCE.md)
 - [Immutable-audit integrity readiness](./vaultlab/docs/AUDIT_INTEGRITY_READINESS.md)
 - [Security-exception governance](./vaultlab/docs/SECURITY_EXCEPTION_GOVERNANCE.md)
+- [Client-integrity readiness](./vaultlab/docs/CLIENT_INTEGRITY_READINESS.md)
+- [Market-data integrity readiness](./vaultlab/docs/MARKET_DATA_INTEGRITY_READINESS.md)
+- [Availability and chaos readiness](./vaultlab/docs/AVAILABILITY_CHAOS_READINESS.md)
 - [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)
 - [Security policy](./SECURITY.md)
 

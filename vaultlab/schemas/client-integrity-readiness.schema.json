@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/client-integrity-readiness.v1.json",
+  "title": "EnteleCLOS client-integrity readiness evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "clientClass", "platformClass", "buildRevision", "binaryDigest", "attestationPolicyDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.client-integrity-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^client_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "clientClass": { "enum": ["wallet-mobile", "wallet-extension", "exchange-mobile", "exchange-web"] },
+    "platformClass": { "enum": ["android", "ios", "browser-extension", "web"] },
+    "buildRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "binaryDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "attestationPolicyDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["officialDistributionVerified", "appSignatureVerified", "reproducibleBuildMatched", "binaryIntegrityVerified", "runtimeAttestationVerified", "hardwareBackedStorageVerified", "debuggingDisabled", "rootJailbreakDetectionVerified", "hookingInstrumentationDetectionVerified", "antiTamperVerified", "secureUpdateVerified", "rollbackProtectionVerified", "telemetryRedactionVerified", "independentReviewComplete"],
+      "properties": {
+        "officialDistributionVerified": { "type": "boolean" },
+        "appSignatureVerified": { "type": "boolean" },
+        "reproducibleBuildMatched": { "type": "boolean" },
+        "binaryIntegrityVerified": { "type": "boolean" },
+        "runtimeAttestationVerified": { "type": "boolean" },
+        "hardwareBackedStorageVerified": { "type": "boolean" },
+        "debuggingDisabled": { "type": "boolean" },
+        "rootJailbreakDetectionVerified": { "type": "boolean" },
+        "hookingInstrumentationDetectionVerified": { "type": "boolean" },
+        "antiTamperVerified": { "type": "boolean" },
+        "secureUpdateVerified": { "type": "boolean" },
+        "rollbackProtectionVerified": { "type": "boolean" },
+        "telemetryRedactionVerified": { "type": "boolean" },
+        "independentReviewComplete": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "attestationFailures", "integrityMismatches", "unsignedBuilds"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "attestationFailures": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "integrityMismatches": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "unsignedBuilds": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

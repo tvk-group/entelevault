@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/market-data-integrity-readiness.v1.json",
+  "title": "EnteleCLOS market-data integrity readiness evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "marketClass", "feedClass", "policyRevision", "observationDigest", "quorumDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.market-data-integrity-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^market_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "marketClass": { "enum": ["spot", "derivatives", "reference-rate", "risk-pricing"] },
+    "feedClass": { "enum": ["consolidated", "primary-secondary", "signed-oracle", "exchange-aggregate"] },
+    "policyRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "observationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "quorumDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["multipleIndependentSourcesVerified", "sourceIdentityVerified", "transportAuthenticityVerified", "schemaValidated", "timestampFreshnessVerified", "sequenceContinuityVerified", "outlierDetectionVerified", "crossSourceQuorumVerified", "staleDataCircuitBreakerVerified", "divergenceCircuitBreakerVerified", "failoverFeedVerified", "replayProtectionVerified", "consumerIsolationVerified", "independentReviewComplete"],
+      "properties": {
+        "multipleIndependentSourcesVerified": { "type": "boolean" },
+        "sourceIdentityVerified": { "type": "boolean" },
+        "transportAuthenticityVerified": { "type": "boolean" },
+        "schemaValidated": { "type": "boolean" },
+        "timestampFreshnessVerified": { "type": "boolean" },
+        "sequenceContinuityVerified": { "type": "boolean" },
+        "outlierDetectionVerified": { "type": "boolean" },
+        "crossSourceQuorumVerified": { "type": "boolean" },
+        "staleDataCircuitBreakerVerified": { "type": "boolean" },
+        "divergenceCircuitBreakerVerified": { "type": "boolean" },
+        "failoverFeedVerified": { "type": "boolean" },
+        "replayProtectionVerified": { "type": "boolean" },
+        "consumerIsolationVerified": { "type": "boolean" },
+        "independentReviewComplete": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "staleObservations", "divergentObservations", "sequenceGaps"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "staleObservations": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "divergentObservations": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "sequenceGaps": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

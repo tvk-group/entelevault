@@ -7,10 +7,10 @@ function report() {
   return runPlatformPolicyAssurance({ generatedAt: "2026-08-07T00:00:00.000Z" });
 }
 
-test("the complete fifteen-gate platform report validates", () => {
+test("the complete eighteen-gate platform report validates", () => {
   const validated = validatePlatformPolicyReport(report());
   assert.equal(validated.result, "PASS");
-  assert.equal(validated.summary.total, 15);
+  assert.equal(validated.summary.total, 18);
   assert.equal(validated.authorityGranted, false);
 });
 
@@ -21,13 +21,13 @@ test("missing, duplicated, renamed, or miscounted platform gates fail closed", (
   missing.checks.pop();
   cases.push(missing);
   const duplicate = structuredClone(base);
-  duplicate.checks[14] = structuredClone(duplicate.checks[13]);
+  duplicate.checks[17] = structuredClone(duplicate.checks[16]);
   cases.push(duplicate);
   const renamed = structuredClone(base);
   renamed.checks[0].id = "VL-PLATFORM-UNKNOWN";
   cases.push(renamed);
   const miscounted = structuredClone(base);
-  miscounted.checks[14].evaluatedCases = 1;
+  miscounted.checks[17].evaluatedCases = 1;
   cases.push(miscounted);
   for (const candidate of cases) assert.throws(() => validatePlatformPolicyReport(candidate));
 });
@@ -35,7 +35,7 @@ test("missing, duplicated, renamed, or miscounted platform gates fail closed", (
 test("inconsistent summaries and any authority claim are rejected", () => {
   const base = report();
   const inconsistent = structuredClone(base);
-  inconsistent.summary.passed = 14;
+  inconsistent.summary.passed = 17;
   assert.throws(
     () => validatePlatformPolicyReport(inconsistent),
     (error) => error.code === "PLATFORM_REPORT_SUMMARY_REJECTED"
