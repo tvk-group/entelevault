@@ -1,0 +1,12 @@
+node_modules/
+coverage/
+reports/
+vaultlab-assurance-report.json
+*.log
+*.wallet
+*.keystore
+*.key
+*.pem
+*.seed
+.env*
+!.env.example

@@ -1,0 +1,44 @@
+name: VaultLab security assurance
+
+on:
+  pull_request:
+    paths:
+      - "**"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vaultlab-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-assurance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: vaultlab/package-lock.json
+      - run: npm ci --ignore-scripts
+        working-directory: vaultlab
+      - run: npm run test:ci
+        working-directory: vaultlab
+      - run: npm run --silent assure > vaultlab-assurance-report.json
+        working-directory: vaultlab
+      - run: npm run validate:report
+        working-directory: vaultlab
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vaultlab-assurance-report
+          path: vaultlab/vaultlab-assurance-report.json
+          if-no-files-found: error
+          retention-days: 14

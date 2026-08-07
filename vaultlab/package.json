@@ -1,0 +1,17 @@
+{
+  "name": "@enteleclos/vaultlab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Synthetic-only cryptographic assurance harness for EnteleVAULT",
+  "type": "module",
+  "scripts": {
+    "assure": "node ./bin/vaultlab.mjs assess",
+    "validate:report": "node ./bin/validate-report.mjs vaultlab-assurance-report.json",
+    "test": "node --test",
+    "test:ci": "node --test --test-reporter=spec"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "UNLICENSED"
+}
