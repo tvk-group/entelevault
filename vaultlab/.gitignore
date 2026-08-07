@@ -3,6 +3,7 @@ coverage/
 reports/
 vaultlab-assurance-report.json
 vaultlab-evidence-envelope.json
+vaultlab-platform-policy-report.json
 vaultlab-production-boundary-report.json
 *.log
 *.wallet

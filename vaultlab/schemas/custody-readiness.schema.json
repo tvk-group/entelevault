@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/custody-readiness.v1.json",
+  "title": "EnteleVAULT native-custody readiness assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessmentId",
+    "assessedAt",
+    "sourceRevision",
+    "environment",
+    "architecture",
+    "controls",
+    "findings",
+    "evidenceDigest"
+  ],
+  "properties": {
+    "schema": { "const": "entelevault.custody-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^assess_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "sourceRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "environment": { "const": "staging" },
+    "architecture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["custodyModel", "keyGeneration", "exportPolicy", "recoveryModel"],
+      "properties": {
+        "custodyModel": {
+          "enum": ["institutional-hsm-quorum", "mpc-quorum", "non-custodial-device-bound"]
+        },
+        "keyGeneration": { "enum": ["certified-hsm", "mpc-ceremony", "platform-hardware"] },
+        "exportPolicy": { "const": "prohibited" },
+        "recoveryModel": { "const": "quorum-governed" }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cryptographyReviewApproved",
+        "hardwareBoundaryReviewed",
+        "mobilePlatformStorageTested",
+        "signingIntentGuardEnabled",
+        "recoveryQuorumTested",
+        "keyCeremonyRehearsed",
+        "incidentExercisePassed",
+        "dependencyProvenanceVerified",
+        "reproducibleBuildVerified",
+        "externalPenetrationTestPassed",
+        "privacyReviewApproved",
+        "monitoringAndRevocationTested"
+      ],
+      "properties": {
+        "cryptographyReviewApproved": { "type": "boolean" },
+        "hardwareBoundaryReviewed": { "type": "boolean" },
+        "mobilePlatformStorageTested": { "type": "boolean" },
+        "signingIntentGuardEnabled": { "type": "boolean" },
+        "recoveryQuorumTested": { "type": "boolean" },
+        "keyCeremonyRehearsed": { "type": "boolean" },
+        "incidentExercisePassed": { "type": "boolean" },
+        "dependencyProvenanceVerified": { "type": "boolean" },
+        "reproducibleBuildVerified": { "type": "boolean" },
+        "externalPenetrationTestPassed": { "type": "boolean" },
+        "privacyReviewApproved": { "type": "boolean" },
+        "monitoringAndRevocationTested": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

@@ -10,6 +10,14 @@ source change -> build isolated test package -> generate synthetic fixture
               -> security gate              -> human-reviewed promotion
 ```
 
+Sanitized policy inputs follow a separate flow:
+
+```text
+reviewed adapter -> remove raw values -> validate exact metadata schema
+                 -> evaluate policy  -> publish recommendation-only evidence
+                 -> independent human review (never automatic execution)
+```
+
 ## Adapter contract for a future EnteleVAULT implementation
 
 A production vault provider should expose a test-only adapter compiled only in the isolated assurance build:
@@ -31,10 +39,13 @@ The adapter must accept only the VaultLab specimen classification and must not s
 - signing/custody changes receive two security reviewers;
 - cryptographic-format or recovery-policy changes require independent external review;
 - release has a rollback plan and incident owner.
+- signing policy accepts only sanitized classifications and always requires independent human confirmation;
+- recovery progression preserves authority evidence, independent quorum, waiting policy, notifications, and finding gates;
+- native-custody readiness is evaluated only in staging, with all twelve controls true and no critical or high finding.
 
 ## Evidence flow
 
-The CI job sends only the report digest, control result, source revision, runner identity, and timestamp to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, environment variables, logs containing raw exceptions, or production data.
+The CI job sends only report digests, control results, source revision, runner identity, timestamps, and aggregate evaluated-case counts to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, signing request, identity evidence, environment variables, logs containing raw exceptions, or production data.
 
 The evidence envelope is a transport contract, not a blockchain transaction and not a production signature. ChronoSeal/GraphVAULT integration must add its own independently reviewed service authentication, authorization, idempotency, retention, and signing design.
 

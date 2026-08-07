@@ -11,6 +11,9 @@ This model separates assurance testing from production custody. VaultLab covers 
 | Signing | malicious approvals or blind signing | human-readable intent, simulation, allowlists, spending limits, independent confirmation | signing-policy test harness |
 | Recovery | unilateral or fraudulent recovery | two-person control, delay, notification, revocation, evidence trail | recovery tabletop + independent audit |
 | Custody | hot-wallet compromise | HSM/MPC, tiered limits, allowlisted withdrawals, anomaly detection | custody architecture and ceremony audit |
+| Signing policy | raw transaction or secret leakage into automation | sanitized classifications, strict schemas, fail-closed decisions, no signing authority | VaultLab policy tests + independent decoder review |
+| Recovery governance | social engineering or workflow fast-forward | verified authority, independent three-role quorum, immutable waiting policy, append-only evidence | VaultLab state-machine tests + independent audit |
+| Custody activation | incomplete controls accepted as ready | staging-only gate, twelve mandatory controls, zero critical/high findings, separate activation review | exhaustive VaultLab gate + external assessment |
 | Exchange account | session theft or API-key abuse | phishing-resistant MFA, scoped keys, IP/device policy, rotation | ASVS/mobile/API penetration test |
 | Withdrawal | account takeover and laundering | risk scoring, cooling periods, case review, sanctions/KYT controls | scenario simulation and compliance review |
 | Supply chain | compromised dependency or build | locked dependencies, provenance, signed releases, isolated builders, SBOM | CI policy and release audit |

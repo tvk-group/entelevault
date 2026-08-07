@@ -21,11 +21,13 @@
 ## Phase 2 — wallet assurance
 
 - mobile and extension threat models;
-- signing-intent decoding and transaction simulation tests;
+- sanitized signing-intent policy guard, with decoding and simulation implemented in a separate reviewed boundary;
 - phishing-resistant authentication and session/device controls;
-- secure backup and recovery-governance tabletop;
+- append-only recovery-governance state machine and scheduled tabletop exercises;
 - hardware-backed key storage and platform attestation testing;
 - reproducible builds, signed updates, dependency provenance, and SBOM.
+
+VaultLab v0.3 implements the policy guard and recovery-governance evidence layer. It does not implement decoding, simulation, signing, key storage, backup, or recovery execution.
 
 ## Phase 3 — exchange and custody assurance
 
@@ -35,6 +37,8 @@
 - API-key scopes, rotation, session risk, and account-takeover exercises;
 - ledger reconciliation, segregation, solvency controls, and immutable audit;
 - incident simulations for compromised signer, cloud account, employee, dependency, and market-data feed.
+
+The v0.3 native-custody readiness gate makes twelve prerequisite controls release-blocking in staging. Eligibility means only that an independent activation review may begin; it never activates custody.
 
 ## Phase 4 — continuous adversarial assurance
 

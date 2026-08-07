@@ -19,6 +19,9 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - production-source exclusion checks for VaultLab imports, fixtures, and test credentials;
 - revision-bound, publishable evidence envelopes for future ChronoSeal/GraphVAULT integration;
 - recommendation-only security-agent policy with no execution, signing, deployment, or asset authority.
+- sanitized signing-intent decisions that always require a human and never receive raw transaction data;
+- append-only recovery governance with independent legal, security, and custody quorum;
+- a staging-only native-custody readiness gate that exhaustively tests all 4,096 combinations of twelve release controls.
 
 VaultLab never receives production data. It runs in an isolated CI/staging test cell, produces a redacted assurance result, and is excluded from production bundles.
 
@@ -38,6 +41,9 @@ See:
 - [Security assurance platform roadmap](./vaultlab/docs/PLATFORM_ROADMAP.md)
 - [Security-agent boundary](./vaultlab/docs/AGENT_BOUNDARY.md)
 - [Evidence contract](./vaultlab/docs/EVIDENCE_CONTRACT.md)
+- [Signing-intent guard](./vaultlab/docs/SIGNING_INTENT_GUARD.md)
+- [Recovery governance](./vaultlab/docs/RECOVERY_GOVERNANCE.md)
+- [Native-custody readiness](./vaultlab/docs/NATIVE_CUSTODY_READINESS.md)
 - [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)
 - [Security policy](./SECURITY.md)
 
@@ -48,6 +54,7 @@ cd vaultlab
 npm ci
 npm test
 npm run assure
+npm run policy:assure
 npm run verify:production-boundary
 ```
 
