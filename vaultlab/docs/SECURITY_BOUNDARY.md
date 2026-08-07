@@ -1,0 +1,34 @@
+# VaultLab security boundary
+
+## Mission
+
+VaultLab gives EnteleVAULT a repeatable way to prove that cryptographic and parser controls fail safely. It is an assurance component, not a recovery component and not a custody component.
+
+## Allowed inputs
+
+- internally generated VaultLab fixtures bearing the exact synthetic schema;
+- one in-memory test credential created for that fixture;
+- fixed, allowlisted corruption names;
+- bounded KDF-policy configuration maintained in source control.
+
+## Rejected inputs
+
+- paths, uploads, URLs, archives, removable media, and arbitrary JSON;
+- Ethereum, Bitcoin, Solana, hardware-wallet, browser-wallet, exchange, or vendor keystore formats;
+- mnemonics, seeds, private keys, derivation paths, public addresses, signatures, or transaction data;
+- arrays, streams, dictionaries, password lists, candidate generators, personal clues, or target profiles;
+- GPU kernels, distributed workers, RPC endpoints, chain broadcasters, or signing providers.
+
+## Fail-closed invariants
+
+1. The parser accepts only an exact schema and rejects unknown fields.
+2. KDF values below or above policy are rejected before derivation.
+3. Only one credential is accepted per API call; arrays are rejected.
+4. Authentication, attestation, mutation, and parsing errors expose stable codes, not underlying secrets.
+5. Decrypted specimens are zeroed after verification and are never returned.
+6. Reports contain no credential, plaintext, key, seed, wallet address, or candidate information.
+7. The package has no network or filesystem import API.
+
+## Trust limitation
+
+The embedded fixture attestation detects mutation during a test flow; it is not a production signature and does not establish legal provenance. Production evidence signing belongs in ChronoSeal/GraphVAULT under a separately reviewed key-management design.
