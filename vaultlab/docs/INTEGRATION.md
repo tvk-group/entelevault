@@ -42,10 +42,13 @@ The adapter must accept only the VaultLab specimen classification and must not s
 - signing policy accepts only sanitized classifications and always requires independent human confirmation;
 - recovery progression preserves authority evidence, independent quorum, waiting policy, notifications, and finding gates;
 - native-custody readiness is evaluated only in staging, with all twelve controls true and no critical or high finding.
+- withdrawal metadata contains no identity, address, exact amount, IP, transaction, credential, or key and never directly drives execution;
+- release provenance has all fourteen controls true and zero critical, high, or medium findings;
+- incident transitions preserve severity, completed controls, approval evidence, phase order, and independent closure quorum.
 
 ## Evidence flow
 
-The CI job sends only report digests, control results, source revision, runner identity, timestamps, and aggregate evaluated-case counts to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, signing request, identity evidence, environment variables, logs containing raw exceptions, or production data.
+The CI job sends only report digests, control results, source revision, runner identity, timestamps, and aggregate evaluated-case counts to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, signing or withdrawal request, identity evidence, artifact content, incident payload, environment variables, logs containing raw exceptions, or production data.
 
 The evidence envelope is a transport contract, not a blockchain transaction and not a production signature. ChronoSeal/GraphVAULT integration must add its own independently reviewed service authentication, authorization, idempotency, retention, and signing design.
 

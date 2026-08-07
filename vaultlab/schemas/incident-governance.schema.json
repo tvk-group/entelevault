@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/incident-governance.v1.json",
+  "title": "EnteleCLOS incident governance case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "incidentId", "phase", "openedAt", "lastTransitionAt", "environment", "classification", "controls", "approvals", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.incident-governance.v1" },
+    "incidentId": { "type": "string", "pattern": "^inc_[0-9a-f]{32}$" },
+    "phase": { "enum": ["detected", "triaged", "contained", "access-revoked", "assets-reconciled", "recovery-reviewed", "closed"] },
+    "openedAt": { "type": "string", "format": "date-time" },
+    "lastTransitionAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "domain", "customerImpact", "assetImpact"],
+      "properties": {
+        "severity": { "enum": ["low", "medium", "high", "critical"] },
+        "domain": { "enum": ["custody", "exchange", "identity", "infrastructure", "supply-chain", "wallet"] },
+        "customerImpact": { "enum": ["confirmed", "none", "suspected", "unknown"] },
+        "assetImpact": { "enum": ["confirmed", "none", "suspected", "unknown"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["incidentCommanderAssigned", "evidencePreserved", "securityNotified", "legalNotified", "custodyNotified", "containmentVerified", "accessRevocationVerified", "rotationVerified", "reconciliationVerified", "customerCommunicationReviewed", "regulatoryAssessmentCompleted", "rootCauseReviewed", "remediationPlanApproved", "independentClosureApproved"],
+      "properties": {
+        "incidentCommanderAssigned": { "type": "boolean" },
+        "evidencePreserved": { "type": "boolean" },
+        "securityNotified": { "type": "boolean" },
+        "legalNotified": { "type": "boolean" },
+        "custodyNotified": { "type": "boolean" },
+        "containmentVerified": { "type": "boolean" },
+        "accessRevocationVerified": { "type": "boolean" },
+        "rotationVerified": { "type": "boolean" },
+        "reconciliationVerified": { "type": "boolean" },
+        "customerCommunicationReviewed": { "type": "boolean" },
+        "regulatoryAssessmentCompleted": { "type": "boolean" },
+        "rootCauseReviewed": { "type": "boolean" },
+        "remediationPlanApproved": { "type": "boolean" },
+        "independentClosureApproved": { "type": "boolean" }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "approverId", "approvedAt", "attestationDigest"],
+        "properties": {
+          "role": { "enum": ["custody", "independent-review", "legal", "operations", "security"] },
+          "approverId": { "type": "string", "pattern": "^approver_[0-9a-f]{16}$" },
+          "approvedAt": { "type": "string", "format": "date-time" },
+          "attestationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "mediumOpen"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "mediumOpen": { "type": "integer", "minimum": 0, "maximum": 1000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

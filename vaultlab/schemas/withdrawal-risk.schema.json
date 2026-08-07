@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/withdrawal-risk.v1.json",
+  "title": "EnteleEXCHANGE sanitized withdrawal risk request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "observedAt", "environment", "subject", "withdrawal", "controls", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleexchange.withdrawal-risk.v1" },
+    "requestId": { "type": "string", "pattern": "^wdreq_[0-9a-f]{32}$" },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["ci", "staging", "production-observation"] },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accountAgeClass", "sessionAssurance", "deviceTrust", "recentCredentialChange", "accountTakeoverSuspected"],
+      "properties": {
+        "accountAgeClass": { "enum": ["established", "new", "unknown"] },
+        "sessionAssurance": { "enum": ["degraded", "phishing-resistant", "standard", "unknown"] },
+        "deviceTrust": { "enum": ["blocked", "new", "trusted", "unknown"] },
+        "recentCredentialChange": { "type": "boolean" },
+        "accountTakeoverSuspected": { "type": "boolean" }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assetClass", "amountClass", "destinationTrust", "velocityClass", "crossBorderRisk", "complianceStatus", "networkRisk"],
+      "properties": {
+        "assetClass": { "enum": ["fungible", "native", "other", "stable", "unknown"] },
+        "amountClass": { "enum": ["elevated", "limit-exceeding", "micro", "standard", "unknown"] },
+        "destinationTrust": { "enum": ["allowlisted", "blocked", "known", "new", "unknown"] },
+        "velocityClass": { "enum": ["elevated", "limit-exceeding", "normal", "unknown"] },
+        "crossBorderRisk": { "enum": ["high", "low", "medium", "unknown"] },
+        "complianceStatus": { "enum": ["blocked", "clear", "review", "unavailable"] },
+        "networkRisk": { "enum": ["high", "low", "medium", "unknown"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phishingResistantMfaSatisfied", "freshReauthenticationSatisfied", "cooldownRequiredHours", "cooldownElapsedHours", "dualApprovalRequired", "dualApprovalSatisfied", "travelRuleRequired", "travelRuleSatisfied"],
+      "properties": {
+        "phishingResistantMfaSatisfied": { "type": "boolean" },
+        "freshReauthenticationSatisfied": { "type": "boolean" },
+        "cooldownRequiredHours": { "type": "integer", "minimum": 0, "maximum": 720 },
+        "cooldownElapsedHours": { "type": "integer", "minimum": 0, "maximum": 8760 },
+        "dualApprovalRequired": { "type": "boolean" },
+        "dualApprovalSatisfied": { "type": "boolean" },
+        "travelRuleRequired": { "type": "boolean" },
+        "travelRuleSatisfied": { "type": "boolean" }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

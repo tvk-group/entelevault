@@ -8,7 +8,7 @@ This repository is an early product and assurance foundation. It is not yet a pr
 
 ## VaultLab
 
-[`vaultlab/`](./vaultlab/) is the synthetic-only EnteleVAULT cryptographic assurance harness. It provides:
+[`vaultlab/`](./vaultlab/) is the synthetic and sanitized-metadata-only EnteleVAULT assurance harness. It provides:
 
 - strict synthetic artifact policy and rejection of wallet-shaped inputs;
 - scrypt policy bounds and downgrade rejection;
@@ -18,12 +18,15 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - explicit rejection of password lists, bulk candidates, targets, wallet imports, mnemonics, seeds, addresses, signing, and network operations.
 - production-source exclusion checks for VaultLab imports, fixtures, and test credentials;
 - revision-bound, publishable evidence envelopes for future ChronoSeal/GraphVAULT integration;
-- recommendation-only security-agent policy with no execution, signing, deployment, or asset authority.
+- recommendation-only security-agent policy with no execution, signing, deployment, or asset authority;
 - sanitized signing-intent decisions that always require a human and never receive raw transaction data;
 - append-only recovery governance with independent legal, security, and custody quorum;
-- a staging-only native-custody readiness gate that exhaustively tests all 4,096 combinations of twelve release controls.
+- a staging-only native-custody readiness gate that exhaustively tests all 4,096 combinations of twelve release controls;
+- a sanitized EnteleEXCHANGE withdrawal guard with no hold or withdrawal authority;
+- a fourteen-control release-provenance gate with all 16,384 combinations tested;
+- a one-way incident lifecycle with monotonic evidence and independent closure quorum.
 
-VaultLab never receives production data. It runs in an isolated CI/staging test cell, produces a redacted assurance result, and is excluded from production bundles.
+VaultLab never receives raw production data. It runs in an isolated CI/staging test cell; production-observation policy calls contain only exact sanitized metadata and evidence digests. VaultLab produces redacted assurance results and is excluded from production bundles.
 
 ## Security architecture
 
@@ -44,6 +47,9 @@ See:
 - [Signing-intent guard](./vaultlab/docs/SIGNING_INTENT_GUARD.md)
 - [Recovery governance](./vaultlab/docs/RECOVERY_GOVERNANCE.md)
 - [Native-custody readiness](./vaultlab/docs/NATIVE_CUSTODY_READINESS.md)
+- [Exchange withdrawal policy guard](./vaultlab/docs/WITHDRAWAL_POLICY_GUARD.md)
+- [Release provenance gate](./vaultlab/docs/RELEASE_PROVENANCE_GATE.md)
+- [Incident governance](./vaultlab/docs/INCIDENT_GOVERNANCE.md)
 - [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)
 - [Security policy](./SECURITY.md)
 

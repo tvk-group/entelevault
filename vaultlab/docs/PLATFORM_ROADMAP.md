@@ -29,6 +29,8 @@
 
 VaultLab v0.3 implements the policy guard and recovery-governance evidence layer. It does not implement decoding, simulation, signing, key storage, backup, or recovery execution.
 
+VaultLab v0.4 adds release provenance and incident governance across wallet, exchange, vault, custody, identity, supply-chain, and infrastructure domains. It evaluates evidence but never deploys or operates production systems.
+
 ## Phase 3 — exchange and custody assurance
 
 - hot/warm/cold custody policy with quantitative exposure limits;
@@ -39,6 +41,8 @@ VaultLab v0.3 implements the policy guard and recovery-governance evidence layer
 - incident simulations for compromised signer, cloud account, employee, dependency, and market-data feed.
 
 The v0.3 native-custody readiness gate makes twelve prerequisite controls release-blocking in staging. Eligibility means only that an independent activation review may begin; it never activates custody.
+
+The v0.4 withdrawal guard evaluates sanitized risk classes and always hands off to a separate human-controlled authorization service. It has no hold, withdrawal, signing, or asset authority.
 
 ## Phase 4 — continuous adversarial assurance
 

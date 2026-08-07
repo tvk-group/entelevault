@@ -13,13 +13,33 @@ import {
   evaluateCustodyReadiness,
   REQUIRED_CUSTODY_CONTROLS
 } from "./native-custody-readiness.mjs";
+import {
+  evaluateWithdrawalRequest,
+  validateWithdrawalRequest,
+  WITHDRAWAL_REQUEST_SCHEMA
+} from "./withdrawal-policy.mjs";
+import {
+  evaluateReleaseProvenance,
+  RELEASE_PROVENANCE_SCHEMA,
+  REQUIRED_RELEASE_CONTROLS
+} from "./release-provenance.mjs";
+import {
+  evaluateIncidentCase,
+  INCIDENT_CASE_SCHEMA,
+  INCIDENT_CONTROL_FIELDS,
+  validateIncidentTransition
+} from "./incident-governance.mjs";
 
 const AUTHORITY_FIELDS = Object.freeze([
   "executionAuthorized",
   "signingAuthorized",
   "assetMovementAuthorized",
   "deploymentAuthorized",
-  "custodyActivationAuthorized"
+  "custodyActivationAuthorized",
+  "withdrawalAuthorized",
+  "holdExecutionAuthorized",
+  "containmentAuthorized",
+  "accessRevocationAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -124,6 +144,109 @@ function custodyAssessment(controls) {
   };
 }
 
+function withdrawalRequest(overrides = {}) {
+  const base = {
+    schema: WITHDRAWAL_REQUEST_SCHEMA,
+    requestId: "wdreq_0123456789abcdef0123456789abcdef",
+    observedAt: "2026-08-07T00:00:00.000Z",
+    environment: "ci",
+    subject: {
+      accountAgeClass: "established",
+      sessionAssurance: "phishing-resistant",
+      deviceTrust: "trusted",
+      recentCredentialChange: false,
+      accountTakeoverSuspected: false
+    },
+    withdrawal: {
+      assetClass: "stable",
+      amountClass: "standard",
+      destinationTrust: "allowlisted",
+      velocityClass: "normal",
+      crossBorderRisk: "low",
+      complianceStatus: "clear",
+      networkRisk: "low"
+    },
+    controls: {
+      phishingResistantMfaSatisfied: true,
+      freshReauthenticationSatisfied: true,
+      cooldownRequiredHours: 24,
+      cooldownElapsedHours: 24,
+      dualApprovalRequired: true,
+      dualApprovalSatisfied: true,
+      travelRuleRequired: true,
+      travelRuleSatisfied: true
+    },
+    evidenceDigest: "e".repeat(64)
+  };
+  return {
+    ...base,
+    ...overrides,
+    subject: { ...base.subject, ...(overrides.subject ?? {}) },
+    withdrawal: { ...base.withdrawal, ...(overrides.withdrawal ?? {}) },
+    controls: { ...base.controls, ...(overrides.controls ?? {}) }
+  };
+}
+
+function releaseAssessment(controls) {
+  return {
+    schema: RELEASE_PROVENANCE_SCHEMA,
+    assessmentId: "release_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-07T00:00:00.000Z",
+    environment: "ci",
+    component: "entelevault-service",
+    sourceRevision: "f".repeat(40),
+    artifactDigest: "0".repeat(64),
+    builderIdentityDigest: "1".repeat(64),
+    workflowDigest: "2".repeat(64),
+    sbomDigest: "3".repeat(64),
+    dependencyLockDigest: "4".repeat(64),
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, mediumOpen: 0 },
+    evidenceDigest: "5".repeat(64)
+  };
+}
+
+function incidentApproval(role, marker) {
+  return {
+    role,
+    approverId: `approver_${marker.repeat(16)}`,
+    approvedAt: "2026-08-08T00:00:00.000Z",
+    attestationDigest: marker.repeat(64)
+  };
+}
+
+function incidentCase(overrides = {}) {
+  const base = {
+    schema: INCIDENT_CASE_SCHEMA,
+    incidentId: "inc_0123456789abcdef0123456789abcdef",
+    phase: "recovery-reviewed",
+    openedAt: "2026-08-07T00:00:00.000Z",
+    lastTransitionAt: "2026-08-08T00:00:00.000Z",
+    environment: "staging",
+    classification: {
+      severity: "high",
+      domain: "exchange",
+      customerImpact: "suspected",
+      assetImpact: "none"
+    },
+    controls: Object.fromEntries(INCIDENT_CONTROL_FIELDS.map((control) => [control, true])),
+    approvals: [
+      incidentApproval("security", "6"),
+      incidentApproval("operations", "7"),
+      incidentApproval("independent-review", "8")
+    ],
+    findings: { criticalOpen: 0, highOpen: 0, mediumOpen: 0 },
+    evidenceDigest: "9".repeat(64)
+  };
+  return {
+    ...base,
+    ...overrides,
+    classification: { ...base.classification, ...(overrides.classification ?? {}) },
+    controls: { ...base.controls, ...(overrides.controls ?? {}) },
+    findings: { ...base.findings, ...(overrides.findings ?? {}) }
+  };
+}
+
 function result(id, evaluatedCases, passed) {
   return { id, status: passed ? "PASS" : "FAIL", evaluatedCases };
 }
@@ -198,14 +321,95 @@ function assureCustodyReadiness() {
   return result("VL-PLATFORM-CUSTODY", total, eligible === 1 && !authorityGranted);
 }
 
+function assureWithdrawalPolicy() {
+  const decisions = [
+    evaluateWithdrawalRequest(withdrawalRequest()),
+    evaluateWithdrawalRequest(withdrawalRequest({ subject: { accountTakeoverSuspected: true } })),
+    evaluateWithdrawalRequest(withdrawalRequest({ withdrawal: { complianceStatus: "unavailable" } })),
+    evaluateWithdrawalRequest(withdrawalRequest({ withdrawal: { destinationTrust: "new" } }))
+  ];
+  let prohibitedRejected = false;
+  try {
+    validateWithdrawalRequest(withdrawalRequest({ rawTransaction: "synthetic-prohibited-value" }));
+  } catch (error) {
+    prohibitedRejected = error?.code === "WITHDRAWAL_PROHIBITED_FIELD";
+  }
+  const passed =
+    decisions[0].recommendation === "PROCEED_TO_SEPARATE_AUTHORIZATION" &&
+    decisions[1].recommendation === "HOLD_AND_ESCALATE" &&
+    decisions[2].recommendation === "HOLD_AND_ESCALATE" &&
+    decisions[3].recommendation === "REQUIRE_HUMAN_RISK_REVIEW" &&
+    decisions.every((decision) => !grantsAuthority(decision)) &&
+    prohibitedRejected;
+  return result("VL-PLATFORM-WITHDRAWAL", decisions.length + 1, passed);
+}
+
+function assureReleaseProvenance() {
+  const total = 1 << REQUIRED_RELEASE_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(
+      REQUIRED_RELEASE_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))])
+    );
+    const decision = evaluateReleaseProvenance(releaseAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_PROMOTION_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_PROMOTION_REVIEW")) {
+      return result("VL-PLATFORM-PROVENANCE", total, false);
+    }
+  }
+  return result("VL-PLATFORM-PROVENANCE", total, eligible === 1 && !authorityGranted);
+}
+
+function assureIncidentGovernance() {
+  const ready = evaluateIncidentCase(incidentCase());
+  const blocked = evaluateIncidentCase(incidentCase({ findings: { mediumOpen: 1 } }));
+  const closed = incidentCase({
+    phase: "closed",
+    lastTransitionAt: "2026-08-08T01:00:00.000Z"
+  });
+  const transition = validateIncidentTransition(incidentCase(), closed);
+  let downgradeRejected = false;
+  try {
+    validateIncidentTransition(
+      incidentCase(),
+      incidentCase({
+        phase: "closed",
+        lastTransitionAt: "2026-08-08T01:00:00.000Z",
+        classification: { severity: "medium" }
+      })
+    );
+  } catch (error) {
+    downgradeRejected = error?.code === "INCIDENT_TRANSITION_CONTROL_REJECTED";
+  }
+  const passed =
+    ready.recommendation === "READY_FOR_SEPARATE_CLOSURE_REVIEW" &&
+    blocked.recommendation === "ACTIVE_RESPONSE_REQUIRED" &&
+    transition.accepted &&
+    !grantsAuthority(ready) &&
+    !grantsAuthority(blocked) &&
+    !grantsAuthority(transition) &&
+    downgradeRejected;
+  return result("VL-PLATFORM-INCIDENT", 4, passed);
+}
+
 export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOString() } = {}) {
   if (typeof generatedAt !== "string" || Number.isNaN(Date.parse(generatedAt))) {
     throw new TypeError("generatedAt must be an ISO-compatible date-time");
   }
-  const checks = [assureSigningPolicy(), assureRecoveryGovernance(), assureCustodyReadiness()];
+  const checks = [
+    assureSigningPolicy(),
+    assureRecoveryGovernance(),
+    assureCustodyReadiness(),
+    assureWithdrawalPolicy(),
+    assureReleaseProvenance(),
+    assureIncidentGovernance()
+  ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v1",
+    schema: "enteleclos.platform-policy-assurance.v2",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

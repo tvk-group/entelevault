@@ -2,7 +2,7 @@
 
 ## Mission
 
-VaultLab gives EnteleVAULT a repeatable way to prove that cryptographic and parser controls fail safely. It is an assurance component, not a recovery component and not a custody component.
+VaultLab gives the EnteleKRON ecosystem a repeatable way to prove that cryptographic, parser, policy, readiness, provenance, and governance controls fail safely. It is an assurance component, not a recovery, custody, signing, deployment, exchange-operations, or incident-response component.
 
 ## Allowed inputs
 
@@ -10,6 +10,7 @@ VaultLab gives EnteleVAULT a repeatable way to prove that cryptographic and pars
 - one in-memory test credential created for that fixture;
 - fixed, allowlisted corruption names;
 - bounded KDF-policy configuration maintained in source control.
+- exact versioned policy objects containing only sanitized classifications, booleans, counts, pseudonymous identifiers, timestamps, allowlisted enums, source revisions, and SHA-256 evidence digests.
 
 ## Rejected inputs
 
@@ -28,6 +29,8 @@ VaultLab gives EnteleVAULT a repeatable way to prove that cryptographic and pars
 5. Decrypted specimens are zeroed after verification and are never returned.
 6. Reports contain no credential, plaintext, key, seed, wallet address, or candidate information.
 7. The package has no network or filesystem import API.
+8. Policy decisions never grant hold, containment, revocation, withdrawal, signing, deployment, custody-activation, or asset-movement authority.
+9. Unknown fields, missing evidence, incomplete controls, backward transitions, and prohibited payload shapes fail closed.
 
 ## Trust limitation
 
