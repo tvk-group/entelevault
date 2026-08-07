@@ -21,6 +21,9 @@ This model separates assurance testing from production custody. VaultLab covers 
 | Release promotion | unbound or compromised artifact promoted | fourteen provenance controls, zero open findings, exhaustive gate, separate human promotion | VaultLab provenance tests + release audit |
 | Incident closure | premature closure or silent evidence rollback | forward-only phases, severity floor, monotonic controls, append-only approvals, independent quorum | VaultLab state-machine tests + incident exercise |
 | Infrastructure | insider or cloud compromise | least privilege, just-in-time access, immutable audit, dual approval | cloud configuration and red-team review |
+| Privileged access | dormant account, session theft, SoD conflict, standing privilege, or unapproved change | active-status classification, phishing-resistant MFA, reauthentication, JIT, ticket binding, bounded session, dual approval | VaultLab privileged-access tests + IAM assessment |
+| Exchange ledger | incomplete liabilities, reconciliation drift, commingling, replay, or stale reserve evidence | double entry, segregation, complete snapshots, reconciliations, reviewed method, independent attestation, alert and replay tests | exhaustive VaultLab ledger gate + independent financial audit |
+| Emergency access | bypassed quorum, unlimited session, missing monitoring, or premature closure | authority evidence, three-role quorum, 60-minute ceiling, recording, monitoring, automatic revocation, sealed evidence, independent closure | VaultLab break-glass state machine + emergency exercise |
 | Availability | DDoS, queue exhaustion, market volatility | WAF, rate limits, circuit breakers, backpressure, tested recovery | load/chaos testing and incident exercises |
 
 ## Security agents to build safely
@@ -33,5 +36,8 @@ This model separates assurance testing from production custody. VaultLab covers 
 6. Recovery Governance Agent — verifies authorization, dual control, waiting periods, notifications, and evidence completeness; it never receives recovery secrets.
 7. VaultLab Agent — runs only generated fixtures and publishes signed pass/fail evidence.
 8. Incident Governance Agent — validates evidence, forward-only phases, monotonic controls, and independent closure quorum; it cannot execute response actions.
+9. Privileged Access Guard — validates sanitized JIT, session, SoD, scope, change-window, and approval evidence; it cannot grant access.
+10. Ledger Integrity Agent — validates digest-only reconciliation and control evidence; it cannot claim solvency or mutate exchange state.
+11. Break-Glass Governance Agent — validates emergency quorum, timing, revocation, and closure evidence; it cannot start a session or execute commands.
 
 No agent receives unilateral custody authority. Recommendations and detections are separated from signing and asset movement.

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/privileged-access.v1.json",
+  "title": "EnteleCLOS sanitized privileged-access request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "requestId", "observedAt", "environment", "principal", "session", "action", "controls", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.privileged-access.v1" },
+    "requestId": { "type": "string", "pattern": "^pareq_[0-9a-f]{32}$" },
+    "observedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["ci", "staging", "production-observation"] },
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roleClass", "employmentStatus", "privilegeTier", "separationOfDutiesConflict", "recentRoleChange"],
+      "properties": {
+        "roleClass": { "enum": ["security", "custody", "operations", "compliance", "support", "automation"] },
+        "employmentStatus": { "enum": ["active", "leave", "terminated", "unknown"] },
+        "privilegeTier": { "enum": ["standard", "elevated", "break-glass"] },
+        "separationOfDutiesConflict": { "type": "boolean" },
+        "recentRoleChange": { "type": "boolean" }
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assurance", "deviceTrust", "sessionAgeMinutes", "networkTrust", "anomalyClass"],
+      "properties": {
+        "assurance": { "enum": ["phishing-resistant", "standard", "degraded", "unknown"] },
+        "deviceTrust": { "enum": ["managed", "new", "blocked", "unknown"] },
+        "sessionAgeMinutes": { "type": "integer", "minimum": 0, "maximum": 1440 },
+        "networkTrust": { "enum": ["corporate", "approved-remote", "untrusted", "unknown"] },
+        "anomalyClass": { "enum": ["none", "elevated", "critical", "unknown"] }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resourceClass", "riskClass", "changeWindow", "scopeClass"],
+      "properties": {
+        "resourceClass": { "enum": ["custody-policy", "release", "withdrawal-policy", "user-access", "ledger-config", "infrastructure", "configuration"] },
+        "riskClass": { "enum": ["low", "medium", "high", "critical"] },
+        "changeWindow": { "enum": ["approved", "emergency", "outside", "unknown"] },
+        "scopeClass": { "enum": ["read-only", "bounded-write", "broad-write", "unknown"] }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phishingResistantMfaSatisfied", "freshReauthenticationSatisfied", "ticketBound", "justInTimeGrant", "maxSessionAgeMinutes", "grantExpiresMinutes", "dualApprovalRequired", "dualApprovalSatisfied", "breakGlassDeclared", "postActionReviewRequired"],
+      "properties": {
+        "phishingResistantMfaSatisfied": { "type": "boolean" },
+        "freshReauthenticationSatisfied": { "type": "boolean" },
+        "ticketBound": { "type": "boolean" },
+        "justInTimeGrant": { "type": "boolean" },
+        "maxSessionAgeMinutes": { "type": "integer", "minimum": 5, "maximum": 720 },
+        "grantExpiresMinutes": { "type": "integer", "minimum": 5, "maximum": 60 },
+        "dualApprovalRequired": { "type": "boolean" },
+        "dualApprovalSatisfied": { "type": "boolean" },
+        "breakGlassDeclared": { "type": "boolean" },
+        "postActionReviewRequired": { "type": "boolean" }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

@@ -34,6 +34,8 @@ jobs:
         working-directory: vaultlab
       - run: npm run --silent policy:assure > vaultlab-platform-policy-report.json
         working-directory: vaultlab
+      - run: npm run validate:policy-report
+        working-directory: vaultlab
       - run: npm run --silent assure > vaultlab-assurance-report.json
         working-directory: vaultlab
       - run: npm run validate:report

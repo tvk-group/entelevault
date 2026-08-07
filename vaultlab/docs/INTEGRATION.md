@@ -45,10 +45,13 @@ The adapter must accept only the VaultLab specimen classification and must not s
 - withdrawal metadata contains no identity, address, exact amount, IP, transaction, credential, or key and never directly drives execution;
 - release provenance has all fourteen controls true and zero critical, high, or medium findings;
 - incident transitions preserve severity, completed controls, approval evidence, phase order, and independent closure quorum.
+- privileged-access metadata contains no raw identity, credential, token, command, IP, or target and never grants access;
+- ledger-integrity evidence contains digests and aggregate counts only, requires all fourteen controls, and cannot establish solvency or modify exchange state;
+- break-glass evidence preserves forward-only phase order, quorum, immutable time limits, revocation, sealed evidence, and independent closure without starting a session.
 
 ## Evidence flow
 
-The CI job sends only report digests, control results, source revision, runner identity, timestamps, and aggregate evaluated-case counts to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, signing or withdrawal request, identity evidence, artifact content, incident payload, environment variables, logs containing raw exceptions, or production data.
+The CI job sends only report digests, control results, source revision, runner identity, timestamps, and aggregate evaluated-case counts to ChronoSeal/GraphVAULT. It does not send the fixture, credential, plaintext specimen, signing or withdrawal request, raw identity/access evidence, ledger balances or records, break-glass session content, artifact content, incident payload, environment variables, logs containing raw exceptions, or production data.
 
 The evidence envelope is a transport contract, not a blockchain transaction and not a production signature. ChronoSeal/GraphVAULT integration must add its own independently reviewed service authentication, authorization, idempotency, retention, and signing design.
 

@@ -25,6 +25,9 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - a sanitized EnteleEXCHANGE withdrawal guard with no hold or withdrawal authority;
 - a fourteen-control release-provenance gate with all 16,384 combinations tested;
 - a one-way incident lifecycle with monotonic evidence and independent closure quorum.
+- a sanitized privileged-access guard for JIT, session, SoD, scope, change-window, and dual-approval evidence;
+- a fourteen-control exchange ledger-integrity gate with all 16,384 combinations tested and no solvency claim;
+- forward-only break-glass governance that never grants access or starts sessions.
 
 VaultLab never receives raw production data. It runs in an isolated CI/staging test cell; production-observation policy calls contain only exact sanitized metadata and evidence digests. VaultLab produces redacted assurance results and is excluded from production bundles.
 
@@ -50,6 +53,9 @@ See:
 - [Exchange withdrawal policy guard](./vaultlab/docs/WITHDRAWAL_POLICY_GUARD.md)
 - [Release provenance gate](./vaultlab/docs/RELEASE_PROVENANCE_GATE.md)
 - [Incident governance](./vaultlab/docs/INCIDENT_GOVERNANCE.md)
+- [Privileged-access guard](./vaultlab/docs/PRIVILEGED_ACCESS_GUARD.md)
+- [Ledger-integrity gate](./vaultlab/docs/LEDGER_INTEGRITY_GATE.md)
+- [Break-glass governance](./vaultlab/docs/BREAK_GLASS_GOVERNANCE.md)
 - [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)
 - [Security policy](./SECURITY.md)
 
