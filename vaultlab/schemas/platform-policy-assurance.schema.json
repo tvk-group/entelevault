@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://enteleclos.com/schemas/platform-policy-assurance.v5.json",
+  "$id": "https://enteleclos.com/schemas/platform-policy-assurance.v6.json",
   "title": "EnteleCLOS platform policy assurance report",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "generatedAt", "scope", "result", "authorityGranted", "summary", "checks"],
   "properties": {
-    "schema": { "const": "enteleclos.platform-policy-assurance.v5" },
+    "schema": { "const": "enteleclos.platform-policy-assurance.v6" },
     "generatedAt": { "type": "string", "format": "date-time" },
     "scope": { "const": "sanitized-metadata-only" },
     "result": { "enum": ["PASS", "FAIL"] },
@@ -18,13 +18,13 @@
       "properties": {
         "passed": { "type": "integer", "minimum": 0 },
         "failed": { "type": "integer", "minimum": 0 },
-        "total": { "const": 15 }
+        "total": { "const": 18 }
       }
     },
     "checks": {
       "type": "array",
-      "minItems": 15,
-      "maxItems": 15,
+      "minItems": 18,
+      "maxItems": 18,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -46,7 +46,10 @@
               "VL-PLATFORM-RESILIENCE",
               "VL-PLATFORM-SECRET-LEAKAGE",
               "VL-PLATFORM-AUDIT-INTEGRITY",
-              "VL-PLATFORM-SECURITY-EXCEPTION"
+              "VL-PLATFORM-SECURITY-EXCEPTION",
+              "VL-PLATFORM-CLIENT-INTEGRITY",
+              "VL-PLATFORM-MARKET-DATA",
+              "VL-PLATFORM-AVAILABILITY"
             ]
           },
           "status": { "enum": ["PASS", "FAIL"] },

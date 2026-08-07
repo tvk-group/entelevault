@@ -30,7 +30,10 @@ This model separates assurance testing from production custody. VaultLab covers 
 | Secret leakage | credentials, tokens, key material, or wallet data appearing in logs, traces, crash reports, artifacts, support exports, or telemetry | multi-surface scanning, entropy and pattern detection, verified redaction, canaries, pinned rules, zero findings, independent review | exhaustive VaultLab leakage gate + approved external scanners |
 | Immutable audit | deleted, reordered, duplicated, backdated, forged, or unreadably retained security records | append-only storage, hash chain, sequence/time validation, attested writers, retention lock, replication, export integrity, tamper rehearsal | exhaustive VaultLab audit gate + storage/IAM assessment |
 | Security exceptions | permanent waiver, critical-risk bypass, expiry extension, colluding approvers, weak compensation, or premature closure | forward-only phases, no critical waiver, 720-hour ceiling, immutable expiry, independent quorum, monitoring, verified remediation and closure | VaultLab exception state machine + risk/compliance review |
+| Client integrity | repackaged application, unsigned update, rooted/jailbroken device, debugger, hook/instrumentation, rollback, or forged attestation | official distribution, signatures, reproducibility, attestation, hardware storage, anti-tamper, secure update, rollback defense | exhaustive VaultLab client gate + MASVS/mobile assessment |
+| Market data | compromised source, stale/replayed data, sequence gap, outlier, source divergence, or failed fallback | independent sources, authenticated transport, freshness/sequence, quorum, outlier detection, circuit breakers, replay protection, failover | exhaustive VaultLab market-data gate + feed architecture review |
 | Availability | DDoS, queue exhaustion, market volatility | WAF, rate limits, circuit breakers, backpressure, tested recovery | load/chaos testing and incident exercises |
+| Availability exercise | production blast radius, real traffic, unsafe target, missing load shedding, unrecovered dependency, or silent data corruption | isolated staging, synthetic traffic, bounded blast radius, queue/backpressure controls, degraded mode, recovery/integrity evidence | exhaustive VaultLab availability gate + isolated chaos program |
 
 ## Security agents to build safely
 
@@ -51,5 +54,8 @@ This model separates assurance testing from production custody. VaultLab covers 
 15. Secret Leakage Assurance Agent — validates counts, classifications, ruleset revisions, and evidence digests; it never receives scanned content and cannot revoke or delete.
 16. Immutable Audit Integrity Agent — validates digest-only chain, sequence, time, access, retention, replication, and tamper evidence; it cannot read or mutate audit records.
 17. Security Exception Governance Agent — enforces forward-only, expiring, independently reviewed exception evidence; it cannot grant a waiver, bypass policy, or remediate.
+18. Client Integrity Readiness Agent — validates digest-only build, distribution, attestation, hardware, anti-tamper, and update evidence; it cannot access devices or activate clients.
+19. Market Data Integrity Agent — validates sanitized source, freshness, quorum, outlier, breaker, failover, and replay evidence; it cannot receive prices, publish data, or trade.
+20. Availability Readiness Agent — validates isolated synthetic exercise evidence; it cannot receive targets, generate traffic, execute chaos, fail over, or remediate.
 
 No agent receives unilateral custody authority. Recommendations and detections are separated from signing and asset movement.

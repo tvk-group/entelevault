@@ -29,6 +29,9 @@ VaultLab is a fail-closed, synthetic and sanitized-metadata-only assurance harne
 - a sanitized secret-leakage gate with twelve mandatory controls and exhaustive 4,096-combination testing;
 - an immutable-audit integrity gate with fourteen mandatory controls and exhaustive 16,384-combination testing;
 - forward-only security-exception governance with immutable expiry, a 720-hour ceiling, independent quorum, and no critical-risk waiver.
+- a wallet/exchange client-integrity gate with fourteen mandatory controls and exhaustive 16,384-combination testing;
+- an exchange market-data integrity gate with fourteen mandatory controls and exhaustive 16,384-combination testing;
+- an isolated availability/chaos gate with fourteen mandatory controls and exhaustive 16,384-combination testing.
 
 ## What it cannot do
 
@@ -49,7 +52,7 @@ npm run policy:assure
 
 `npm run assure` creates a fresh credential and specimen in memory. The report contains control results and a fixture identifier, but no credential or decrypted specimen.
 
-`npm run policy:assure` emits a sanitized fifteen-gate report for signing, recovery, custody, withdrawal, release provenance, incident governance, privileged access, ledger integrity, break-glass governance, API/session security, signer ceremonies, resilience, secret leakage, immutable audit, and security exceptions. It exhaustively evaluates 4,096 each for custody and secret leakage plus 16,384 each for release provenance, ledger integrity, resilience, and immutable audit—73,728 combinations total—and always records `authorityGranted: false`.
+`npm run policy:assure` emits a sanitized eighteen-gate report spanning wallet, exchange, vault, custody, identity, infrastructure, governance, client integrity, market data, and availability. It exhaustively evaluates 4,096 combinations each for custody and secret leakage plus 16,384 each for release provenance, ledger integrity, resilience, immutable audit, client integrity, market data, and availability—122,880 combinations total—and always records `authorityGranted: false`.
 
 Additional gates:
 
@@ -68,7 +71,7 @@ The production-boundary verifier scans production code and configuration while e
 
 Raw EnteleVAULT, EnteleWALLET, and EnteleEXCHANGE production data must never enter VaultLab. A CI or staging job calls VaultLab as an independent test package; it generates its own fixtures, or receives only an exact sanitized policy object, emits a redacted result, and exits. See [INTEGRATION.md](./docs/INTEGRATION.md).
 
-The policy modules consume only sanitized classifications, booleans, counts, pseudonymous identifiers, timestamps, revisions, and evidence digests. They produce recommendations only. See [SIGNING_INTENT_GUARD.md](./docs/SIGNING_INTENT_GUARD.md), [RECOVERY_GOVERNANCE.md](./docs/RECOVERY_GOVERNANCE.md), [NATIVE_CUSTODY_READINESS.md](./docs/NATIVE_CUSTODY_READINESS.md), [WITHDRAWAL_POLICY_GUARD.md](./docs/WITHDRAWAL_POLICY_GUARD.md), [RELEASE_PROVENANCE_GATE.md](./docs/RELEASE_PROVENANCE_GATE.md), [INCIDENT_GOVERNANCE.md](./docs/INCIDENT_GOVERNANCE.md), [PRIVILEGED_ACCESS_GUARD.md](./docs/PRIVILEGED_ACCESS_GUARD.md), [LEDGER_INTEGRITY_GATE.md](./docs/LEDGER_INTEGRITY_GATE.md), [BREAK_GLASS_GOVERNANCE.md](./docs/BREAK_GLASS_GOVERNANCE.md), [API_SESSION_SECURITY.md](./docs/API_SESSION_SECURITY.md), [SIGNER_CEREMONY_GOVERNANCE.md](./docs/SIGNER_CEREMONY_GOVERNANCE.md), [RESILIENCE_READINESS.md](./docs/RESILIENCE_READINESS.md), [SECRET_LEAKAGE_ASSURANCE.md](./docs/SECRET_LEAKAGE_ASSURANCE.md), [AUDIT_INTEGRITY_READINESS.md](./docs/AUDIT_INTEGRITY_READINESS.md), and [SECURITY_EXCEPTION_GOVERNANCE.md](./docs/SECURITY_EXCEPTION_GOVERNANCE.md).
+The policy modules consume only sanitized classifications, booleans, counts, pseudonymous identifiers, timestamps, revisions, and evidence digests. They produce recommendations only. See [SIGNING_INTENT_GUARD.md](./docs/SIGNING_INTENT_GUARD.md), [RECOVERY_GOVERNANCE.md](./docs/RECOVERY_GOVERNANCE.md), [NATIVE_CUSTODY_READINESS.md](./docs/NATIVE_CUSTODY_READINESS.md), [WITHDRAWAL_POLICY_GUARD.md](./docs/WITHDRAWAL_POLICY_GUARD.md), [RELEASE_PROVENANCE_GATE.md](./docs/RELEASE_PROVENANCE_GATE.md), [INCIDENT_GOVERNANCE.md](./docs/INCIDENT_GOVERNANCE.md), [PRIVILEGED_ACCESS_GUARD.md](./docs/PRIVILEGED_ACCESS_GUARD.md), [LEDGER_INTEGRITY_GATE.md](./docs/LEDGER_INTEGRITY_GATE.md), [BREAK_GLASS_GOVERNANCE.md](./docs/BREAK_GLASS_GOVERNANCE.md), [API_SESSION_SECURITY.md](./docs/API_SESSION_SECURITY.md), [SIGNER_CEREMONY_GOVERNANCE.md](./docs/SIGNER_CEREMONY_GOVERNANCE.md), [RESILIENCE_READINESS.md](./docs/RESILIENCE_READINESS.md), [SECRET_LEAKAGE_ASSURANCE.md](./docs/SECRET_LEAKAGE_ASSURANCE.md), [AUDIT_INTEGRITY_READINESS.md](./docs/AUDIT_INTEGRITY_READINESS.md), [SECURITY_EXCEPTION_GOVERNANCE.md](./docs/SECURITY_EXCEPTION_GOVERNANCE.md), [CLIENT_INTEGRITY_READINESS.md](./docs/CLIENT_INTEGRITY_READINESS.md), [MARKET_DATA_INTEGRITY_READINESS.md](./docs/MARKET_DATA_INTEGRITY_READINESS.md), and [AVAILABILITY_CHAOS_READINESS.md](./docs/AVAILABILITY_CHAOS_READINESS.md).
 
 ## Security ownership
 

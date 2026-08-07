@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-7",
+  "catalogId": "ENTELE-VAULTLAB-8",
   "status": "draft",
   "controls": [
     {
@@ -240,6 +240,42 @@
     {
       "id": "VL-EXCEPTION-002",
       "title": "Security-exception records reject operational and secret material and cannot grant exceptions, bypass policy, remediate, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-CLIENT-001",
+      "title": "Client-integrity readiness requires all fourteen distribution, signature, reproducibility, binary, attestation, hardware, anti-tamper, update, rollback, redaction, and review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-CLIENT-002",
+      "title": "Client evidence rejects attestation tokens, device identifiers, binaries, credentials, keys, and wallet data and cannot activate, distribute, update, access a device, store keys, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-MARKET-001",
+      "title": "Market-data readiness requires all fourteen source, authenticity, freshness, sequence, outlier, quorum, circuit-breaker, failover, replay, isolation, and review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-MARKET-002",
+      "title": "Market-data evidence rejects feeds, prices, symbols, credentials, orders, trades, and transactions and cannot publish prices, trade, execute orders, mutate limits, or make financial claims",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-AVAILABILITY-001",
+      "title": "Availability readiness requires all fourteen isolation, synthetic-traffic, blast-radius, rate, backpressure, queue, breaker, shedding, degraded-mode, timeout, failover, recovery, observability, and review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-AVAILABILITY-002",
+      "title": "Availability evidence is isolated-test or staging only, rejects commands, targets, hosts, URLs, traffic, and credentials, and cannot generate traffic, execute chaos, fail over, remediate, deploy, sign, or move assets",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }
