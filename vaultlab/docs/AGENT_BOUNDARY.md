@@ -34,7 +34,7 @@ Every decision permanently states:
 
 These fields are security invariants, not configurable settings.
 
-The same authority rule applies to the v0.3 signing-intent, recovery-governance, and custody-readiness decisions. Phrases such as `PROCEED_TO_HUMAN_CONFIRMATION`, `READY_FOR_SEPARATE_CUSTODY_REVIEW`, and `ELIGIBLE_FOR_INDEPENDENT_ACTIVATION_REVIEW` are workflow recommendations—not authorizations.
+The same authority rule applies to signing-intent, recovery-governance, custody-readiness, withdrawal, release-provenance, and incident decisions. Phrases such as `PROCEED_TO_HUMAN_CONFIRMATION`, `PROCEED_TO_SEPARATE_AUTHORIZATION`, `READY_FOR_SEPARATE_CUSTODY_REVIEW`, `ELIGIBLE_FOR_INDEPENDENT_ACTIVATION_REVIEW`, `ELIGIBLE_FOR_INDEPENDENT_PROMOTION_REVIEW`, `READY_FOR_SEPARATE_CLOSURE_REVIEW`, and `CLOSED` are workflow or evidence states—not authorizations.
 
 ## Deployment rule
 

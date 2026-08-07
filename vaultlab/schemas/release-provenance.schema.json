@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/release-provenance.v1.json",
+  "title": "EnteleCLOS release provenance assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "component", "sourceRevision", "artifactDigest", "builderIdentityDigest", "workflowDigest", "sbomDigest", "dependencyLockDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.release-provenance.v1" },
+    "assessmentId": { "type": "string", "pattern": "^release_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["ci", "staging"] },
+    "component": { "enum": ["enteleclos-assurance", "enteleexchange-api", "enteleexchange-web", "entelevault-service", "entelewallet-client"] },
+    "sourceRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "artifactDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "builderIdentityDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "workflowDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "sbomDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "dependencyLockDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRevisionBound", "reproducibleBuildMatched", "isolatedEphemeralBuilder", "workloadIdentityVerified", "artifactSignatureVerified", "attestationVerified", "sbomPresent", "dependencyLockVerified", "secretScanPassed", "staticAnalysisPassed", "dependencyAuditPassed", "branchProtectionVerified", "requiredReviewsVerified", "testEvidenceBound"],
+      "properties": {
+        "sourceRevisionBound": { "type": "boolean" },
+        "reproducibleBuildMatched": { "type": "boolean" },
+        "isolatedEphemeralBuilder": { "type": "boolean" },
+        "workloadIdentityVerified": { "type": "boolean" },
+        "artifactSignatureVerified": { "type": "boolean" },
+        "attestationVerified": { "type": "boolean" },
+        "sbomPresent": { "type": "boolean" },
+        "dependencyLockVerified": { "type": "boolean" },
+        "secretScanPassed": { "type": "boolean" },
+        "staticAnalysisPassed": { "type": "boolean" },
+        "dependencyAuditPassed": { "type": "boolean" },
+        "branchProtectionVerified": { "type": "boolean" },
+        "requiredReviewsVerified": { "type": "boolean" },
+        "testEvidenceBound": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "mediumOpen"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "mediumOpen": { "type": "integer", "minimum": 0, "maximum": 1000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

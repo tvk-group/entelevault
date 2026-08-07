@@ -1,8 +1,8 @@
 {
   "name": "@enteleclos/vaultlab",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "Synthetic-only cryptographic, signing-policy, recovery-governance, and custody-readiness assurance for EnteleVAULT",
+  "description": "Sanitized and synthetic-only security assurance for EnteleWALLET, EnteleEXCHANGE, EnteleVAULT, and EnteleCLOS",
   "type": "module",
   "scripts": {
     "assure": "node ./bin/vaultlab.mjs assess",
