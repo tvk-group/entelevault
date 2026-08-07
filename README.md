@@ -16,6 +16,9 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - corruption, parser, error-redaction, and secret-leakage controls;
 - a machine-readable CI assurance report;
 - explicit rejection of password lists, bulk candidates, targets, wallet imports, mnemonics, seeds, addresses, signing, and network operations.
+- production-source exclusion checks for VaultLab imports, fixtures, and test credentials;
+- revision-bound, publishable evidence envelopes for future ChronoSeal/GraphVAULT integration;
+- recommendation-only security-agent policy with no execution, signing, deployment, or asset authority.
 
 VaultLab never receives production data. It runs in an isolated CI/staging test cell, produces a redacted assurance result, and is excluded from production bundles.
 
@@ -33,6 +36,9 @@ See:
 - [EnteleVAULT integration contract](./vaultlab/docs/INTEGRATION.md)
 - [Wallet and exchange threat model](./vaultlab/docs/THREAT_MODEL.md)
 - [Security assurance platform roadmap](./vaultlab/docs/PLATFORM_ROADMAP.md)
+- [Security-agent boundary](./vaultlab/docs/AGENT_BOUNDARY.md)
+- [Evidence contract](./vaultlab/docs/EVIDENCE_CONTRACT.md)
+- [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)
 - [Security policy](./SECURITY.md)
 
 ## Development
@@ -42,6 +48,7 @@ cd vaultlab
 npm ci
 npm test
 npm run assure
+npm run verify:production-boundary
 ```
 
 Node.js 22 or later is required. No runtime dependency is used by VaultLab.

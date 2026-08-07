@@ -1,0 +1,73 @@
+{
+  "schema": "enteleclos.control-catalog.v1",
+  "catalogId": "ENTELE-VAULTLAB-2",
+  "status": "draft",
+  "controls": [
+    {
+      "id": "VL-CRYPTO-001",
+      "title": "Synthetic authenticated-encryption round trip",
+      "releaseImpact": "blocking",
+      "evidence": "assurance-report"
+    },
+    {
+      "id": "VL-AUTH-001",
+      "title": "Wrong synthetic credential fails closed",
+      "releaseImpact": "blocking",
+      "evidence": "assurance-report"
+    },
+    {
+      "id": "VL-KDF-001",
+      "title": "KDF parameters remain within approved bounds",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-PARSER-001",
+      "title": "Unknown, oversized, nested, bulk, and wallet-shaped input is rejected",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-MUTATION-001",
+      "title": "Corrupted synthetic envelopes fail closed",
+      "releaseImpact": "blocking",
+      "evidence": "assurance-report"
+    },
+    {
+      "id": "VL-REPORT-001",
+      "title": "Reports expose no fixture credential or wallet-shaped material",
+      "releaseImpact": "blocking",
+      "evidence": "report-policy"
+    },
+    {
+      "id": "VL-PROD-001",
+      "title": "Production source contains no VaultLab import, fixture, or credential marker",
+      "releaseImpact": "blocking",
+      "evidence": "production-boundary-report"
+    },
+    {
+      "id": "VL-AGENT-001",
+      "title": "Security agents return recommendations without execution authority",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-AGENT-002",
+      "title": "Security events reject commands, transactions, targets, and credential material",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-EVIDENCE-001",
+      "title": "Evidence envelopes bind a passing report to an exact source revision",
+      "releaseImpact": "blocking",
+      "evidence": "evidence-envelope"
+    }
+  ],
+  "baselineMappings": [
+    "NIST-SSDF",
+    "OWASP-ASVS",
+    "OWASP-MASVS",
+    "CCSS"
+  ]
+}

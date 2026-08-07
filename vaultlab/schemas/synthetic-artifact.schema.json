@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://entelevault.com/schemas/vaultlab/synthetic-artifact.v1.json",
+  "title": "EnteleVAULT VaultLab synthetic artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "purpose",
+    "fixtureId",
+    "createdAt",
+    "kdf",
+    "cipher",
+    "attestation",
+    "metadata"
+  ],
+  "properties": {
+    "schema": { "const": "entelevault.vaultlab.synthetic.v1" },
+    "version": { "const": 1 },
+    "purpose": { "const": "security-assurance-only" },
+    "fixtureId": { "type": "string", "pattern": "^vlab_[0-9a-f]{32}$" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "kdf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "salt", "params"],
+      "properties": {
+        "algorithm": { "const": "scrypt" },
+        "salt": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["N", "r", "p", "keyLength", "maxmem"],
+          "properties": {
+            "N": { "enum": [16384, 32768, 65536, 131072, 262144] },
+            "r": { "const": 8 },
+            "p": { "type": "integer", "minimum": 1, "maximum": 4 },
+            "keyLength": { "const": 32 },
+            "maxmem": { "type": "integer", "minimum": 33554432, "maximum": 268435456 }
+          }
+        }
+      }
+    },
+    "cipher": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "iv", "tag", "ciphertext"],
+      "properties": {
+        "algorithm": { "const": "aes-256-gcm" },
+        "iv": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+        "tag": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+        "ciphertext": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" }
+      }
+    },
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator", "digest"],
+      "properties": {
+        "generator": { "const": "EnteleVAULT VaultLab" },
+        "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scenario", "classification", "controlSet"],
+      "properties": {
+        "scenario": { "type": "string", "pattern": "^[a-z0-9-]{1,48}$" },
+        "classification": { "const": "SYNTHETIC-NONVALUE" },
+        "controlSet": { "const": "ENTELE-VAULTLAB-1" }
+      }
+    }
+  }
+}

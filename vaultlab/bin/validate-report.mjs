@@ -51,13 +51,38 @@ if (!path) {
   }
 
   inspect(report);
+  const summaryFields = new Set(["passed", "failed", "total"]);
+  const checkFields = new Set(["id", "status", "statement", "reason", "rejectionCode"]);
+  const exactFields = (value, allowed) =>
+    value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    Object.keys(value).every((key) => allowed.has(key));
   if (
     report.schema !== "entelevault.vaultlab.assurance-report.v1" ||
+    report.controlSet !== "ENTELE-VAULTLAB-1" ||
+    typeof report.generatedAt !== "string" ||
+    Number.isNaN(Date.parse(report.generatedAt)) ||
     report.scope !== "synthetic-only" ||
+    typeof report.fixtureId !== "string" ||
+    !/^vlab_[0-9a-f]{32}$/u.test(report.fixtureId) ||
     report.result !== "PASS" ||
+    !exactFields(report.summary, summaryFields) ||
+    !Number.isSafeInteger(report.summary?.passed) ||
+    !Number.isSafeInteger(report.summary?.failed) ||
+    !Number.isSafeInteger(report.summary?.total) ||
     report.summary?.failed !== 0 ||
+    report.summary?.passed !== report.summary?.total ||
     !Array.isArray(report.checks) ||
-    report.checks.length === 0
+    report.checks.length !== report.summary?.total ||
+    report.checks.some(
+      (check) =>
+        !exactFields(check, checkFields) ||
+        typeof check.id !== "string" ||
+        !/^VL-[A-Z0-9-]+$/u.test(check.id) ||
+        check.status !== "PASS"
+    ) ||
+    new Set(report.checks.map((check) => check.id)).size !== report.checks.length
   ) {
     throw new Error("Assurance report does not satisfy the release policy");
   }

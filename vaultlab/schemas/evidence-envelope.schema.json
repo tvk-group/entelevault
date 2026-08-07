@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/assurance-evidence.v1.json",
+  "title": "EnteleCLOS assurance evidence envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "recordedAt",
+    "sourceRevision",
+    "runnerIdentity",
+    "reportDigest",
+    "reportSchema",
+    "reportGeneratedAt",
+    "controlSet",
+    "scope",
+    "result",
+    "controlsPassed",
+    "controlsFailed",
+    "publishableFieldsOnly",
+    "containsFixture",
+    "containsCredential",
+    "containsWalletMaterial"
+  ],
+  "properties": {
+    "schema": { "const": "enteleclos.assurance-evidence.v1" },
+    "recordedAt": { "type": "string", "format": "date-time" },
+    "sourceRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "runnerIdentity": { "enum": ["github-actions", "local-vaultlab"] },
+    "reportDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "reportSchema": { "const": "entelevault.vaultlab.assurance-report.v1" },
+    "reportGeneratedAt": { "type": "string", "format": "date-time" },
+    "controlSet": { "const": "ENTELE-VAULTLAB-1" },
+    "scope": { "const": "synthetic-only" },
+    "result": { "const": "PASS" },
+    "controlsPassed": { "type": "integer", "minimum": 1 },
+    "controlsFailed": { "const": 0 },
+    "publishableFieldsOnly": { "const": true },
+    "containsFixture": { "const": false },
+    "containsCredential": { "const": false },
+    "containsWalletMaterial": { "const": false }
+  }
+}

@@ -36,9 +36,20 @@ jobs:
         working-directory: vaultlab
       - run: npm run validate:report
         working-directory: vaultlab
+      - run: npm run --silent verify:production-boundary > vaultlab-production-boundary-report.json
+        working-directory: vaultlab
+      - name: Bind passing evidence to the source revision
+        run: npm run --silent evidence -- vaultlab-assurance-report.json "$GITHUB_SHA" > vaultlab-evidence-envelope.json
+        working-directory: vaultlab
+      - name: Validate generated JSON evidence files
+        run: node -e 'const fs = require("node:fs"); for (const file of ["vaultlab-assurance-report.json", "vaultlab-production-boundary-report.json", "vaultlab-evidence-envelope.json"]) JSON.parse(fs.readFileSync(file, "utf8"));'
+        working-directory: vaultlab
       - uses: actions/upload-artifact@v4
         with:
           name: vaultlab-assurance-report
-          path: vaultlab/vaultlab-assurance-report.json
+          path: |
+            vaultlab/vaultlab-assurance-report.json
+            vaultlab/vaultlab-production-boundary-report.json
+            vaultlab/vaultlab-evidence-envelope.json
           if-no-files-found: error
           retention-days: 14
