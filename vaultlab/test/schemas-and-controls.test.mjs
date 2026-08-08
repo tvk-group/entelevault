@@ -4,6 +4,7 @@ import test from "node:test";
 
 const schemaFiles = [
   "api-session-security.schema.json",
+  "assurance-signer-gateway.schema.json",
   "assurance-report.schema.json",
   "audit-integrity-readiness.schema.json",
   "availability-chaos-readiness.schema.json",
@@ -66,8 +67,8 @@ test("control catalog identifiers are unique and every control blocks release", 
     await readFile(new URL("../controls/vaultlab-controls.json", import.meta.url), "utf8")
   );
   const ids = catalog.controls.map((control) => control.id);
-  assert.equal(catalog.catalogId, "ENTELE-VAULTLAB-11");
-  assert.equal(catalog.controls.length, 62);
+  assert.equal(catalog.catalogId, "ENTELE-VAULTLAB-12");
+  assert.equal(catalog.controls.length, 64);
   assert.equal(new Set(ids).size, ids.length);
   assert.equal(catalog.controls.every((control) => control.releaseImpact === "blocking"), true);
   assert.deepEqual(catalog.baselineMappings, [

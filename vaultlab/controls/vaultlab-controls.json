@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-11",
+  "catalogId": "ENTELE-VAULTLAB-12",
   "status": "draft",
   "controls": [
     {
@@ -372,6 +372,18 @@
     {
       "id": "VL-CONSUMER-002",
       "title": "Consumer release manifests fail closed on authority, findings, custody-boundary, cryptography-migration, freshness, or required-check weakening",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-ASSURANCE-SIGNER-001",
+      "title": "Assurance signer conformance binds exact Vercel workload identities, source revisions, receipt digests, deny-only decisions, key purposes, algorithms, transport, replay, rate, and provider posture",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-ASSURANCE-SIGNER-002",
+      "title": "Assurance signer conformance rejects arbitrary payload, key, credential, wallet, signature, command, replay, provider-downgrade, and identity-confusion inputs and never grants runtime or signing authority",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }

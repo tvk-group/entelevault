@@ -70,7 +70,7 @@ test("passing evidence is revision-bound and grants no authority", () => {
   assert.equal(attestation.status, "PASS");
   assert.equal(attestation.releaseDisposition, "ELIGIBLE_FOR_HUMAN_RELEASE_REVIEW");
   assert.equal(attestation.sourceRevision, "a".repeat(40));
-  assert.equal(attestation.platformChecks, 25);
+  assert.equal(attestation.platformChecks, 26);
   assert.equal(attestation.cryptographyMigrationStatus, "GOVERNANCE_PRESENT_NO_QUANTUM_SAFETY_CLAIM");
   for (const field of [
     "authorityGranted",
