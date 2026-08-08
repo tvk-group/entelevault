@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/external-assessment-readiness.v1.json",
+  "title": "EnteleCLOS external-assessment readiness record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "scopeClass", "engagementRevision", "scopeDigest", "rulesOfEngagementDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.external-assessment-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^external_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "scopeClass": { "enum": ["wallet-client", "exchange-service", "vault-service", "cloud-perimeter"] },
+    "engagementRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "scopeDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "rulesOfEngagementDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["writtenAuthorizationVerified", "scopeBoundariesVerified", "rulesOfEngagementVerified", "safeHarborVerified", "independentAssessorVerified", "assessorCompetenceVerified", "conflictCheckComplete", "testWindowApproved", "productionSafetyPlanVerified", "dataHandlingPlanVerified", "emergencyContactsVerified", "findingSeverityMethodVerified", "evidenceRetentionVerified", "independentClosureReviewPlanned"],
+      "properties": {
+        "writtenAuthorizationVerified": { "type": "boolean" },
+        "scopeBoundariesVerified": { "type": "boolean" },
+        "rulesOfEngagementVerified": { "type": "boolean" },
+        "safeHarborVerified": { "type": "boolean" },
+        "independentAssessorVerified": { "type": "boolean" },
+        "assessorCompetenceVerified": { "type": "boolean" },
+        "conflictCheckComplete": { "type": "boolean" },
+        "testWindowApproved": { "type": "boolean" },
+        "productionSafetyPlanVerified": { "type": "boolean" },
+        "dataHandlingPlanVerified": { "type": "boolean" },
+        "emergencyContactsVerified": { "type": "boolean" },
+        "findingSeverityMethodVerified": { "type": "boolean" },
+        "evidenceRetentionVerified": { "type": "boolean" },
+        "independentClosureReviewPlanned": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorizationGaps", "scopeAmbiguities", "safetyGaps", "dataHandlingGaps", "unresolvedConflicts"],
+      "properties": {
+        "authorizationGaps": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "scopeAmbiguities": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "safetyGaps": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "dataHandlingGaps": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "unresolvedConflicts": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

@@ -37,6 +37,9 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - a fourteen-control wallet/exchange client-integrity gate for signed builds, runtime attestation, anti-tamper, and secure updates;
 - a fourteen-control exchange market-data integrity gate for source quorum, freshness, outliers, replay, failover, and circuit breakers;
 - an isolated availability/chaos gate that rejects production exercises, operational targets, traffic payloads, and execution authority.
+- a fourteen-control vulnerability-remediation lifecycle gate that receives no exploit or finding details and executes no remediation;
+- a fourteen-control external-assessment readiness gate that verifies authorization, scope, safe harbor, safety, and assessor independence without conducting testing;
+- a fourteen-control privacy/data-minimization gate that receives no personal or raw production data and cannot access or delete records.
 
 VaultLab never receives raw production data. It runs in an isolated CI/staging test cell; production-observation policy calls contain only exact sanitized metadata and evidence digests. VaultLab produces redacted assurance results and is excluded from production bundles.
 
@@ -74,6 +77,9 @@ See:
 - [Client-integrity readiness](./vaultlab/docs/CLIENT_INTEGRITY_READINESS.md)
 - [Market-data integrity readiness](./vaultlab/docs/MARKET_DATA_INTEGRITY_READINESS.md)
 - [Availability and chaos readiness](./vaultlab/docs/AVAILABILITY_CHAOS_READINESS.md)
+- [Vulnerability-remediation readiness](./vaultlab/docs/VULNERABILITY_REMEDIATION_READINESS.md)
+- [External-assessment readiness](./vaultlab/docs/EXTERNAL_ASSESSMENT_READINESS.md)
+- [Privacy and data-minimization readiness](./vaultlab/docs/PRIVACY_DATA_MINIMIZATION_READINESS.md)
 - [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)
 - [Security policy](./SECURITY.md)
 

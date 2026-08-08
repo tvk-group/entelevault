@@ -7,8 +7,8 @@ test("platform policy assurance emits publishable, authority-free evidence", () 
   assert.equal(report.result, "PASS");
   assert.equal(report.scope, "sanitized-metadata-only");
   assert.equal(report.authorityGranted, false);
-  assert.equal(report.schema, "enteleclos.platform-policy-assurance.v6");
-  assert.deepEqual(report.summary, { passed: 18, failed: 0, total: 18 });
+  assert.equal(report.schema, "enteleclos.platform-policy-assurance.v7");
+  assert.deepEqual(report.summary, { passed: 21, failed: 0, total: 21 });
   assert.equal(report.checks.find((check) => check.id === "VL-PLATFORM-CUSTODY").evaluatedCases, 4096);
   assert.equal(
     report.checks.find((check) => check.id === "VL-PLATFORM-PROVENANCE").evaluatedCases,
@@ -30,7 +30,7 @@ test("platform policy assurance emits publishable, authority-free evidence", () 
     report.checks.find((check) => check.id === "VL-PLATFORM-AUDIT-INTEGRITY").evaluatedCases,
     16384
   );
-  for (const id of ["VL-PLATFORM-CLIENT-INTEGRITY", "VL-PLATFORM-MARKET-DATA", "VL-PLATFORM-AVAILABILITY"]) {
+  for (const id of ["VL-PLATFORM-CLIENT-INTEGRITY", "VL-PLATFORM-MARKET-DATA", "VL-PLATFORM-AVAILABILITY", "VL-PLATFORM-VULNERABILITY-REMEDIATION", "VL-PLATFORM-EXTERNAL-ASSESSMENT", "VL-PLATFORM-PRIVACY-MINIMIZATION"]) {
     assert.equal(report.checks.find((check) => check.id === id).evaluatedCases, 16384);
   }
   assert.deepEqual(
