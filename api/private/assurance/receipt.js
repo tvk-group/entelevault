@@ -130,6 +130,9 @@ async function signReceipt(receipt) {
     signal: AbortSignal.timeout(4_000),
     headers: {
       "Authorization": `Bearer ${signerToken}`,
+      ...(process.env.VERCEL_OIDC_TOKEN
+        ? { "x-vercel-trusted-oidc-idp-token": process.env.VERCEL_OIDC_TOKEN }
+        : {}),
       "Content-Type": "application/json",
       "X-OSOIX-Purpose": "assurance-receipt-signing",
     },
