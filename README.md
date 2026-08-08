@@ -41,8 +41,10 @@ This repository is an early product and assurance foundation. It is not yet a pr
 - a fourteen-control external-assessment readiness gate that verifies authorization, scope, safe harbor, safety, and assessor independence without conducting testing;
 - a fourteen-control privacy/data-minimization gate that receives no personal or raw production data and cannot access or delete records.
 - a fourteen-control cryptography-review gate for primitives, parameters, randomness, nonces, lifecycle, agility, provenance, side channels, vectors, and migration evidence;
+- a fourteen-control quantum-migration readiness gate that requires standards-based crypto agility and never claims quantum safety;
 - a fourteen-control security-disclosure/bug-bounty governance gate that receives no vulnerability report, exploit, target, or researcher identity;
 - a fourteen-control third-party risk gate for due diligence, data flow, access, contracts, subprocessors, continuity, concentration, exit, and monitoring evidence.
+- an immutable-policy, exact-revision, freshness-bound consumer release gate for EnteleWALLET and EnteleEXCHANGE CI.
 
 VaultLab never receives raw production data. It runs in an isolated CI/staging test cell; production-observation policy calls contain only exact sanitized metadata and evidence digests. VaultLab produces redacted assurance results and is excluded from production bundles.
 
@@ -84,6 +86,8 @@ See:
 - [External-assessment readiness](./vaultlab/docs/EXTERNAL_ASSESSMENT_READINESS.md)
 - [Privacy and data-minimization readiness](./vaultlab/docs/PRIVACY_DATA_MINIMIZATION_READINESS.md)
 - [Cryptography-review readiness](./vaultlab/docs/CRYPTOGRAPHY_REVIEW_READINESS.md)
+- [Quantum-migration readiness](./vaultlab/docs/QUANTUM_MIGRATION_READINESS.md)
+- [Consumer release gate](./vaultlab/docs/CONSUMER_RELEASE_GATE.md)
 - [Security-disclosure and bug-bounty readiness](./vaultlab/docs/SECURITY_DISCLOSURE_READINESS.md)
 - [Third-party risk readiness](./vaultlab/docs/THIRD_PARTY_RISK_READINESS.md)
 - [Machine-readable control catalog](./vaultlab/controls/vaultlab-controls.json)

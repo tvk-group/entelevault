@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/consumer-release-manifest.v1.json",
+  "title": "EnteleCLOS consumer release manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "applicationId", "repository", "componentClass", "releaseEnvironment", "policyRevision", "maxReportAgeSeconds", "policy", "custodyBoundary", "cryptographyMigration", "requiredChecks"],
+  "properties": {
+    "schema": { "const": "enteleclos.consumer-release-manifest.v1" },
+    "applicationId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,63}$" },
+    "repository": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+    "componentClass": { "enum": ["wallet-client", "exchange-frontend"] },
+    "releaseEnvironment": { "const": "production-review" },
+    "policyRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "maxReportAgeSeconds": { "type": "integer", "minimum": 60, "maximum": 3600 },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failClosed", "humanAuthorizationRequired", "independentReviewRequired", "authorityGranted", "criticalFindingsAllowed", "highFindingsAllowed"],
+      "properties": {
+        "failClosed": { "const": true },
+        "humanAuthorizationRequired": { "const": true },
+        "independentReviewRequired": { "const": true },
+        "authorityGranted": { "const": false },
+        "criticalFindingsAllowed": { "const": 0 },
+        "highFindingsAllowed": { "const": 0 }
+      }
+    },
+    "custodyBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "receivesSecretMaterial", "signingAuthority", "assetMovementAuthority", "custodyActivationAuthority"],
+      "properties": {
+        "mode": { "enum": ["external-non-custodial", "disabled"] },
+        "receivesSecretMaterial": { "const": false },
+        "signingAuthority": { "const": false },
+        "assetMovementAuthority": { "const": false },
+        "custodyActivationAuthority": { "const": false }
+      }
+    },
+    "cryptographyMigration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventoryStatus", "longLivedDataAssessment", "migrationArchitecture", "customCryptography", "productionMigration", "classicalControls"],
+      "properties": {
+        "inventoryStatus": { "const": "complete" },
+        "longLivedDataAssessment": { "const": "required" },
+        "migrationArchitecture": { "const": "independent-review-required" },
+        "customCryptography": { "const": "prohibited" },
+        "productionMigration": { "const": "separately-authorized" },
+        "classicalControls": { "const": "required" }
+      }
+    },
+    "requiredChecks": {
+      "type": "array",
+      "minItems": 25,
+      "maxItems": 25,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^VL-PLATFORM-[A-Z-]+$" }
+    }
+  }
+}

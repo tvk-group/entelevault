@@ -113,6 +113,11 @@ import {
   REQUIRED_CRYPTOGRAPHY_REVIEW_CONTROLS
 } from "./cryptography-review-readiness.mjs";
 import {
+  evaluateQuantumMigrationReadiness,
+  QUANTUM_MIGRATION_SCHEMA,
+  REQUIRED_QUANTUM_MIGRATION_CONTROLS
+} from "./quantum-migration-readiness.mjs";
+import {
   evaluateSecurityDisclosure,
   REQUIRED_SECURITY_DISCLOSURE_CONTROLS,
   SECURITY_DISCLOSURE_SCHEMA
@@ -174,6 +179,7 @@ const AUTHORITY_FIELDS = Object.freeze([
   "retentionMutationAuthorized",
   "cryptographicOperationAuthorized",
   "cryptoMigrationAuthorized",
+  "algorithmMigrationAuthorized",
   "programActivationAuthorized",
   "publicDisclosureAuthorized",
   "rewardPaymentAuthorized",
@@ -856,6 +862,28 @@ function cryptographyAssessment(controls) {
   };
 }
 
+function quantumMigrationAssessment(controls) {
+  return {
+    schema: QUANTUM_MIGRATION_SCHEMA,
+    assessmentId: "quantum_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-11T00:00:00.000Z",
+    environment: "staging",
+    systemClass: "wallet-client",
+    architectureRevision: "6".repeat(40),
+    inventoryDigest: "7".repeat(64),
+    migrationPlanDigest: "8".repeat(64),
+    controls,
+    findings: {
+      criticalOpen: 0,
+      highOpen: 0,
+      inventoryGaps: 0,
+      unreviewedDependencies: 0,
+      interoperabilityFailures: 0
+    },
+    evidenceDigest: "9".repeat(64)
+  };
+}
+
 function securityDisclosureAssessment(controls) {
   return {
     schema: SECURITY_DISCLOSURE_SCHEMA,
@@ -1378,6 +1406,37 @@ function assureCryptographyReview() {
   return result("VL-PLATFORM-CRYPTOGRAPHY-REVIEW", total, eligible === 1 && !authorityGranted);
 }
 
+function assureQuantumMigrationReadiness() {
+  const total = 1 << REQUIRED_QUANTUM_MIGRATION_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  let safetyClaimed = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(
+      REQUIRED_QUANTUM_MIGRATION_CONTROLS.map((control, index) => [
+        control,
+        Boolean(mask & (1 << index))
+      ])
+    );
+    const decision = evaluateQuantumMigrationReadiness(quantumMigrationAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_QUANTUM_MIGRATION_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if (decision.quantumSafetyClaimed) safetyClaimed = true;
+    if (
+      (mask === allEnabled) !==
+      (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_QUANTUM_MIGRATION_REVIEW")
+    ) {
+      return result("VL-PLATFORM-QUANTUM-MIGRATION", total, false);
+    }
+  }
+  return result(
+    "VL-PLATFORM-QUANTUM-MIGRATION",
+    total,
+    eligible === 1 && !authorityGranted && !safetyClaimed
+  );
+}
+
 function assureSecurityDisclosure() {
   const total = 1 << REQUIRED_SECURITY_DISCLOSURE_CONTROLS.length;
   const allEnabled = total - 1;
@@ -1435,12 +1494,13 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureExternalAssessment(),
     assurePrivacyDataMinimization(),
     assureCryptographyReview(),
+    assureQuantumMigrationReadiness(),
     assureSecurityDisclosure(),
     assureThirdPartyRisk()
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v8",
+    schema: "enteleclos.platform-policy-assurance.v9",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",
