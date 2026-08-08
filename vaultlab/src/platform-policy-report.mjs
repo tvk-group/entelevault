@@ -1,6 +1,6 @@
 import { VaultLabError } from "./errors.mjs";
 
-export const PLATFORM_POLICY_REPORT_SCHEMA = "enteleclos.platform-policy-assurance.v8";
+export const PLATFORM_POLICY_REPORT_SCHEMA = "enteleclos.platform-policy-assurance.v9";
 
 export const PLATFORM_POLICY_EXPECTED_CASES = Object.freeze({
   "VL-PLATFORM-SIGNING": 5,
@@ -25,6 +25,7 @@ export const PLATFORM_POLICY_EXPECTED_CASES = Object.freeze({
   "VL-PLATFORM-EXTERNAL-ASSESSMENT": 16384,
   "VL-PLATFORM-PRIVACY-MINIMIZATION": 16384,
   "VL-PLATFORM-CRYPTOGRAPHY-REVIEW": 16384,
+  "VL-PLATFORM-QUANTUM-MIGRATION": 16384,
   "VL-PLATFORM-SECURITY-DISCLOSURE": 16384,
   "VL-PLATFORM-THIRD-PARTY-RISK": 16384
 });

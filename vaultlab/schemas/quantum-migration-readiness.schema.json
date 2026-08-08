@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/quantum-migration-readiness.v1.json",
+  "title": "EnteleCLOS quantum-migration readiness assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "systemClass", "architectureRevision", "inventoryDigest", "migrationPlanDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.quantum-migration-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^quantum_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "systemClass": { "enum": ["wallet-client", "exchange-frontend", "vault-service", "cloud-control-plane", "custody-interface"] },
+    "architectureRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "inventoryDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "migrationPlanDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classicalAlgorithmInventoryComplete", "longLivedDataExposureAssessed", "asymmetricDependencyMapComplete", "standardsProfileApproved", "librarySupportRoadmapReviewed", "protocolNegotiationVersioned", "cryptoAgilityInterfacesVerified", "hybridMigrationPlanReviewed", "rollbackAndInteroperabilityPlanVerified", "materialLifecyclePlanReviewed", "dataFormatMigrationPlanReviewed", "supplyChainCompatibilityReviewed", "independentCryptographyReviewComplete", "customCryptographyProhibited"],
+      "properties": {
+        "classicalAlgorithmInventoryComplete": { "type": "boolean" },
+        "longLivedDataExposureAssessed": { "type": "boolean" },
+        "asymmetricDependencyMapComplete": { "type": "boolean" },
+        "standardsProfileApproved": { "type": "boolean" },
+        "librarySupportRoadmapReviewed": { "type": "boolean" },
+        "protocolNegotiationVersioned": { "type": "boolean" },
+        "cryptoAgilityInterfacesVerified": { "type": "boolean" },
+        "hybridMigrationPlanReviewed": { "type": "boolean" },
+        "rollbackAndInteroperabilityPlanVerified": { "type": "boolean" },
+        "materialLifecyclePlanReviewed": { "type": "boolean" },
+        "dataFormatMigrationPlanReviewed": { "type": "boolean" },
+        "supplyChainCompatibilityReviewed": { "type": "boolean" },
+        "independentCryptographyReviewComplete": { "type": "boolean" },
+        "customCryptographyProhibited": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "inventoryGaps", "unreviewedDependencies", "interoperabilityFailures"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "inventoryGaps": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "unreviewedDependencies": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "interoperabilityFailures": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

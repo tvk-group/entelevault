@@ -69,5 +69,7 @@ This model separates assurance testing from production custody. VaultLab covers 
 24. Cryptography Review Readiness Agent — validates digest/count-only primitive, parameter, randomness, nonce, lifecycle, agility, provenance, side-channel, vector, and migration evidence; it cannot receive material or perform cryptography.
 25. Security Disclosure Readiness Agent — validates policy, scope, safe-harbor, privacy, triage, reward, legal, evidence, remediation-tracking, and publication evidence; it cannot receive reports, authorize testing, publish, or pay.
 26. Third-Party Risk Readiness Agent — validates due-diligence, data-flow, access, contract, subprocessor, continuity, concentration, exit, and monitoring evidence; it cannot onboard providers, grant access, contract, procure, or pay.
+27. Quantum Migration Readiness Agent — validates digest/count-only inventory, exposure, dependency, standards, agility, hybrid-plan, interoperability, lifecycle, supply-chain, and independent-review evidence; it cannot claim quantum safety, select algorithms, or migrate cryptography.
+28. Consumer Release Gate — binds a fresh complete platform report to an immutable EnteleVAULT policy revision and exact consumer repository revision; it cannot deploy, activate custody, sign, trade, withdraw, or move assets.
 
 No agent receives unilateral custody authority. Recommendations and detections are separated from signing and asset movement.

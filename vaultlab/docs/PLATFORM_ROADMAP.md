@@ -77,6 +77,8 @@ The v0.9 assessment-governance layer makes remediation SLAs, independently autho
 
 The v0.10 trust-governance layer makes independent cryptographic approval, responsible-disclosure governance, and critical-provider risk controls release-blocking. Eligibility remains a review state only, never operational or commercial authority.
 
+The v0.11 production-enforcement layer adds explicit quantum-migration governance and immutable-policy, exact-revision, freshness-bound consumer attestations for EnteleWALLET and EnteleEXCHANGE CI. It blocks release review when policy evidence drifts, but it cannot claim quantum safety, authorize migration, deploy, activate custody, sign, trade, withdraw, or move assets.
+
 ## Release metrics
 
 - zero unreviewed custody-path changes;
