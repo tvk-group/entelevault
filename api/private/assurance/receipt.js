@@ -38,6 +38,8 @@ const CLOCK_SKEW_SECONDS = 60;
 const JWKS_CACHE_MILLISECONDS = 5 * 60_000;
 const ED25519_SIGNATURE_BYTES = 64;
 const ML_DSA_65_SIGNATURE_BYTES = 3309;
+const CHALLENGE_BYTES = 32;
+const RECEIPT_ID_BYTES = 18;
 
 let jwksCache = null;
 
@@ -295,6 +297,12 @@ function validIdentifier(value) {
   return typeof value === 'string' && /^[A-Za-z0-9._:/-]{1,128}$/.test(value);
 }
 
+function randomIdentifier() {
+  return Buffer.from(crypto.getRandomValues(new Uint8Array(RECEIPT_ID_BYTES))).toString(
+    'base64url',
+  );
+}
+
 async function signReceipt(receipt, runtimeIdentity) {
   const signerUrl = getSignerUrl();
   if (!signerUrl || !runtimeIdentity.valid) throw new Error('Signer unavailable');
@@ -313,7 +321,7 @@ async function signReceipt(receipt, runtimeIdentity) {
       'X-OSOIX-Purpose': 'assurance-receipt-signing',
     },
     body: JSON.stringify({
-      schema: 'osoix.assurance-signing-request.v1',
+      schema: 'osoix.assurance-signing-request.v2',
       keyPurpose: `${RECEIPT_CONFIG.issuer}-assurance-receipt`,
       algorithms: ['Ed25519', 'ML-DSA-65'],
       receiptDigest,
@@ -363,7 +371,7 @@ function setResponseHeaders(res) {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Vary', 'Authorization, x-osoix-purpose');
+  res.setHeader('Vary', 'Authorization, x-osoix-purpose, x-osoix-challenge');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 }
 
@@ -372,6 +380,14 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({ status: 'blocked', commandPath: false });
+  }
+  const challenge = headerValue(req, 'x-osoix-challenge');
+  if (!isCanonicalBase64Url(challenge, CHALLENGE_BYTES)) {
+    return res.status(400).json({
+      status: 'blocked',
+      reason: 'invalid_challenge',
+      commandPath: false,
+    });
   }
   if (!(await authenticateOsoix(req))) {
     return res.status(401).json({ status: 'blocked', commandPath: false });
@@ -393,7 +409,10 @@ export default async function handler(req, res) {
     deployment: runtimeIdentity.evidence,
   };
   const receipt = {
-    schema: 'osoix.assurance-receipt.v1',
+    schema: 'osoix.assurance-receipt.v2',
+    receiptId: randomIdentifier(),
+    challenge,
+    purpose: 'read-only-assurance',
     issuer: RECEIPT_CONFIG.issuer,
     audience: 'OSOIX',
     subject: RECEIPT_CONFIG.subject,
