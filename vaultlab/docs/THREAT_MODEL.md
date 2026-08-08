@@ -34,6 +34,9 @@ This model separates assurance testing from production custody. VaultLab covers 
 | Market data | compromised source, stale/replayed data, sequence gap, outlier, source divergence, or failed fallback | independent sources, authenticated transport, freshness/sequence, quorum, outlier detection, circuit breakers, replay protection, failover | exhaustive VaultLab market-data gate + feed architecture review |
 | Availability | DDoS, queue exhaustion, market volatility | WAF, rate limits, circuit breakers, backpressure, tested recovery | load/chaos testing and incident exercises |
 | Availability exercise | production blast radius, real traffic, unsafe target, missing load shedding, unrecovered dependency, or silent data corruption | isolated staging, synthetic traffic, bounded blast radius, queue/backpressure controls, degraded mode, recovery/integrity evidence | exhaustive VaultLab availability gate + isolated chaos program |
+| Vulnerability remediation | unowned or overdue critical/high finding, unverifiable fix, failed retest, regression, or silent exception | complete inventory/intake, severity and SLA policy, ownership, fix provenance, independent retest, sealed closure, exception governance | exhaustive VaultLab remediation gate + independent retest |
+| External assessment | testing without authority, ambiguous scope, unsafe production impact, conflicted assessor, mishandled evidence, or premature closure | written authorization, exact scope/rules, safe harbor, independent qualified assessor, safety and handling plans, closure review | exhaustive VaultLab readiness gate + separately contracted assessment |
+| Privacy minimization | overcollection, uncontrolled access, excessive retention, backup mismatch, unverified deletion, or personal data leakage | inventory, purpose limitation, field allowlist, encryption, least privilege, retention/deletion controls, redaction, rights process | exhaustive VaultLab privacy gate + independent privacy assessment |
 
 ## Security agents to build safely
 
@@ -57,5 +60,8 @@ This model separates assurance testing from production custody. VaultLab covers 
 18. Client Integrity Readiness Agent — validates digest-only build, distribution, attestation, hardware, anti-tamper, and update evidence; it cannot access devices or activate clients.
 19. Market Data Integrity Agent — validates sanitized source, freshness, quorum, outlier, breaker, failover, and replay evidence; it cannot receive prices, publish data, or trade.
 20. Availability Readiness Agent — validates isolated synthetic exercise evidence; it cannot receive targets, generate traffic, execute chaos, fail over, or remediate.
+21. Vulnerability Remediation Readiness Agent — validates digest/count-only ownership, SLA, provenance, retest, closure, and exception evidence; it cannot receive exploit details, scan, patch, or remediate.
+22. External Assessment Readiness Agent — validates authorization, scope, safe-harbor, assessor, safety, handling, and closure evidence; it cannot test, exploit, generate traffic, or grant access.
+23. Privacy Minimization Readiness Agent — validates digest/count-only collection, encryption, access, retention, deletion, redaction, rights, and review evidence; it cannot receive, access, mutate, or delete personal data.
 
 No agent receives unilateral custody authority. Recommendations and detections are separated from signing and asset movement.

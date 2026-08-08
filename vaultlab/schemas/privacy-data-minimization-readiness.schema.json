@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/privacy-data-minimization-readiness.v1.json",
+  "title": "EnteleCLOS privacy data-minimization assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "systemClass", "dataClass", "policyRevision", "dataFlowDigest", "retentionPolicyDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.privacy-data-minimization-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^privacy_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "systemClass": { "enum": ["wallet", "exchange", "vault", "security-platform"] },
+    "dataClass": { "enum": ["customer-identity", "authentication-telemetry", "transaction-metadata", "security-observability"] },
+    "policyRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "dataFlowDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "retentionPolicyDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dataInventoryComplete", "purposeLimitationVerified", "collectionMinimized", "fieldAllowlistVerified", "sensitiveDataClassificationVerified", "encryptionAtRestVerified", "encryptionInTransitVerified", "accessLeastPrivilegeVerified", "retentionScheduleVerified", "deletionWorkflowVerified", "backupRetentionAligned", "telemetryRedactionVerified", "subjectRightsProcessVerified", "independentPrivacyReviewComplete"],
+      "properties": {
+        "dataInventoryComplete": { "type": "boolean" },
+        "purposeLimitationVerified": { "type": "boolean" },
+        "collectionMinimized": { "type": "boolean" },
+        "fieldAllowlistVerified": { "type": "boolean" },
+        "sensitiveDataClassificationVerified": { "type": "boolean" },
+        "encryptionAtRestVerified": { "type": "boolean" },
+        "encryptionInTransitVerified": { "type": "boolean" },
+        "accessLeastPrivilegeVerified": { "type": "boolean" },
+        "retentionScheduleVerified": { "type": "boolean" },
+        "deletionWorkflowVerified": { "type": "boolean" },
+        "backupRetentionAligned": { "type": "boolean" },
+        "telemetryRedactionVerified": { "type": "boolean" },
+        "subjectRightsProcessVerified": { "type": "boolean" },
+        "independentPrivacyReviewComplete": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "excessFields", "retentionBreaches", "deletionVerificationFailures"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "excessFields": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "retentionBreaches": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "deletionVerificationFailures": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

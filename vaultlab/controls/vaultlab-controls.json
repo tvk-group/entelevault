@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-8",
+  "catalogId": "ENTELE-VAULTLAB-9",
   "status": "draft",
   "controls": [
     {
@@ -276,6 +276,42 @@
     {
       "id": "VL-AVAILABILITY-002",
       "title": "Availability evidence is isolated-test or staging only, rejects commands, targets, hosts, URLs, traffic, and credentials, and cannot generate traffic, execute chaos, fail over, remediate, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-VULNERABILITY-001",
+      "title": "Vulnerability remediation requires all fourteen inventory, intake, severity, ownership, SLA, exposure, provenance, retest, regression, closure, and exception-governance controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-VULNERABILITY-002",
+      "title": "Vulnerability evidence rejects exploit details, targets, credentials, raw findings, and wallet material and cannot scan, exploit, remediate, patch, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-ASSESSMENT-001",
+      "title": "External-assessment readiness requires all fourteen authorization, scope, rules, safe-harbor, independence, safety, handling, severity, retention, and closure-review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-ASSESSMENT-002",
+      "title": "External-assessment evidence rejects attacks, exploits, targets, credentials, payloads, and wallet material and cannot scan, exploit, generate traffic, access devices, grant access, or remediate",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-PRIVACY-001",
+      "title": "Privacy minimization requires all fourteen inventory, purpose, collection, allowlist, classification, encryption, least-privilege, retention, deletion, backup, redaction, rights, and review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-PRIVACY-002",
+      "title": "Privacy evidence rejects personal data, identifiers, credentials, raw records, and wallet material and cannot access raw data, delete data, mutate retention, grant access, remediate, deploy, sign, or move assets",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }

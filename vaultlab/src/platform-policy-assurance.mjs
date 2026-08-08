@@ -92,6 +92,21 @@ import {
   evaluateAvailabilityReadiness,
   REQUIRED_AVAILABILITY_CONTROLS
 } from "./availability-chaos-readiness.mjs";
+import {
+  evaluateVulnerabilityRemediation,
+  REQUIRED_VULNERABILITY_REMEDIATION_CONTROLS,
+  VULNERABILITY_REMEDIATION_SCHEMA
+} from "./vulnerability-remediation-readiness.mjs";
+import {
+  evaluateExternalAssessmentReadiness,
+  EXTERNAL_ASSESSMENT_SCHEMA,
+  REQUIRED_EXTERNAL_ASSESSMENT_CONTROLS
+} from "./external-assessment-readiness.mjs";
+import {
+  evaluatePrivacyDataMinimization,
+  PRIVACY_DATA_MINIMIZATION_SCHEMA,
+  REQUIRED_PRIVACY_DATA_MINIMIZATION_CONTROLS
+} from "./privacy-data-minimization-readiness.mjs";
 
 const AUTHORITY_FIELDS = Object.freeze([
   "executionAuthorized",
@@ -135,7 +150,13 @@ const AUTHORITY_FIELDS = Object.freeze([
   "orderExecutionAuthorized",
   "riskLimitMutationAuthorized",
   "trafficGenerationAuthorized",
-  "chaosExecutionAuthorized"
+  "chaosExecutionAuthorized",
+  "vulnerabilityScanningAuthorized",
+  "exploitationAuthorized",
+  "patchDeploymentAuthorized",
+  "rawDataAccessAuthorized",
+  "dataDeletionAuthorized",
+  "retentionMutationAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -744,6 +765,55 @@ function availabilityAssessment(controls) {
   };
 }
 
+function vulnerabilityRemediationAssessment(controls) {
+  return {
+    schema: VULNERABILITY_REMEDIATION_SCHEMA,
+    assessmentId: "vuln_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-09T00:00:00.000Z",
+    environment: "staging",
+    componentClass: "vault-service",
+    policyRevision: "e".repeat(40),
+    inventoryDigest: "f".repeat(64),
+    triageDigest: "0".repeat(64),
+    controls,
+    findings: { criticalOverdue: 0, highOverdue: 0, criticalUnassigned: 0, highUnassigned: 0, retestFailures: 0 },
+    evidenceDigest: "1".repeat(64)
+  };
+}
+
+function externalAssessment(controls) {
+  return {
+    schema: EXTERNAL_ASSESSMENT_SCHEMA,
+    assessmentId: "external_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-09T00:00:00.000Z",
+    environment: "staging",
+    scopeClass: "exchange-service",
+    engagementRevision: "2".repeat(40),
+    scopeDigest: "3".repeat(64),
+    rulesOfEngagementDigest: "4".repeat(64),
+    controls,
+    findings: { authorizationGaps: 0, scopeAmbiguities: 0, safetyGaps: 0, dataHandlingGaps: 0, unresolvedConflicts: 0 },
+    evidenceDigest: "5".repeat(64)
+  };
+}
+
+function privacyAssessment(controls) {
+  return {
+    schema: PRIVACY_DATA_MINIMIZATION_SCHEMA,
+    assessmentId: "privacy_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-09T00:00:00.000Z",
+    environment: "staging",
+    systemClass: "exchange",
+    dataClass: "customer-identity",
+    policyRevision: "6".repeat(40),
+    dataFlowDigest: "7".repeat(64),
+    retentionPolicyDigest: "8".repeat(64),
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, excessFields: 0, retentionBreaches: 0, deletionVerificationFailures: 0 },
+    evidenceDigest: "9".repeat(64)
+  };
+}
+
 function result(id, evaluatedCases, passed) {
   return { id, status: passed ? "PASS" : "FAIL", evaluatedCases };
 }
@@ -1172,6 +1242,51 @@ function assureAvailabilityReadiness() {
   return result("VL-PLATFORM-AVAILABILITY", total, eligible === 1 && !authorityGranted);
 }
 
+function assureVulnerabilityRemediation() {
+  const total = 1 << REQUIRED_VULNERABILITY_REMEDIATION_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_VULNERABILITY_REMEDIATION_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateVulnerabilityRemediation(vulnerabilityRemediationAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_REMEDIATION_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_REMEDIATION_REVIEW")) return result("VL-PLATFORM-VULNERABILITY-REMEDIATION", total, false);
+  }
+  return result("VL-PLATFORM-VULNERABILITY-REMEDIATION", total, eligible === 1 && !authorityGranted);
+}
+
+function assureExternalAssessment() {
+  const total = 1 << REQUIRED_EXTERNAL_ASSESSMENT_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_EXTERNAL_ASSESSMENT_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateExternalAssessmentReadiness(externalAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_SEPARATE_EXTERNAL_ASSESSMENT_AUTHORIZATION") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_SEPARATE_EXTERNAL_ASSESSMENT_AUTHORIZATION")) return result("VL-PLATFORM-EXTERNAL-ASSESSMENT", total, false);
+  }
+  return result("VL-PLATFORM-EXTERNAL-ASSESSMENT", total, eligible === 1 && !authorityGranted);
+}
+
+function assurePrivacyDataMinimization() {
+  const total = 1 << REQUIRED_PRIVACY_DATA_MINIMIZATION_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_PRIVACY_DATA_MINIMIZATION_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluatePrivacyDataMinimization(privacyAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_PRIVACY_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_PRIVACY_REVIEW")) return result("VL-PLATFORM-PRIVACY-MINIMIZATION", total, false);
+  }
+  return result("VL-PLATFORM-PRIVACY-MINIMIZATION", total, eligible === 1 && !authorityGranted);
+}
+
 export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOString() } = {}) {
   if (typeof generatedAt !== "string" || Number.isNaN(Date.parse(generatedAt))) {
     throw new TypeError("generatedAt must be an ISO-compatible date-time");
@@ -1194,11 +1309,14 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureSecurityExceptionGovernance(),
     assureClientIntegrity(),
     assureMarketDataIntegrity(),
-    assureAvailabilityReadiness()
+    assureAvailabilityReadiness(),
+    assureVulnerabilityRemediation(),
+    assureExternalAssessment(),
+    assurePrivacyDataMinimization()
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v6",
+    schema: "enteleclos.platform-policy-assurance.v7",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",
