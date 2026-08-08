@@ -81,6 +81,8 @@ The v0.11 production-enforcement layer adds explicit quantum-migration governanc
 
 The v0.12 signer-boundary layer adds exact caller/project identity, fixed key-purpose, deny-receipt digest, source-revision, freshness, Trusted Sources, replay, rate-limit, transport, and hardware-provider conformance policy. It cannot verify runtime tokens, execute requests, operate a signer, perform cryptography, generate/export keys, deploy, activate custody, sign, trade, withdraw, or move assets.
 
+The v0.13 signer-boundary layer replaces the staged v1 receipt contract with challenge-bound v2 conformance. It requires an exact canonical 32-byte OSOIX challenge, unique 18-byte receipt ID, read-only purpose, canonical-receipt match evidence, source-revision binding, deny-only authority, and explicit challenge/receipt replay state. It remains synthetic and cannot verify runtime tokens, issue challenges or receipts, execute requests, operate a signer, perform cryptography, generate/export keys, deploy, activate custody, sign, trade, withdraw, or move assets.
+
 ## Release metrics
 
 - zero unreviewed custody-path changes;

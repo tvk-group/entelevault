@@ -1,6 +1,6 @@
 {
   "name": "@enteleclos/vaultlab",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "private": true,
   "description": "Sanitized and synthetic-only security assurance for EnteleWALLET, EnteleEXCHANGE, EnteleVAULT, and EnteleCLOS",
   "type": "module",

@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://enteleclos.com/schemas/platform-policy-assurance.v10.json",
+  "$id": "https://enteleclos.com/schemas/platform-policy-assurance.v11.json",
   "title": "EnteleCLOS platform policy assurance report",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "generatedAt", "scope", "result", "authorityGranted", "summary", "checks"],
   "properties": {
-    "schema": { "const": "enteleclos.platform-policy-assurance.v10" },
+    "schema": { "const": "enteleclos.platform-policy-assurance.v11" },
     "generatedAt": { "type": "string", "format": "date-time" },
     "scope": { "const": "sanitized-metadata-only" },
     "result": { "enum": ["PASS", "FAIL"] },

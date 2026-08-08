@@ -2,9 +2,9 @@ import { createHash } from "node:crypto";
 import { VaultLabError } from "./errors.mjs";
 
 export const ASSURANCE_SIGNER_GATEWAY_SCHEMA =
-  "entelevault.assurance-signer-gateway-case.v1";
+  "entelevault.assurance-signer-gateway-case.v2";
 export const ASSURANCE_SIGNER_GATEWAY_DECISION_SCHEMA =
-  "entelevault.assurance-signer-gateway-decision.v1";
+  "entelevault.assurance-signer-gateway-decision.v2";
 
 export const ASSURANCE_SIGNER_ALGORITHMS = Object.freeze(["Ed25519", "ML-DSA-65"]);
 
@@ -39,6 +39,8 @@ const MAX_TOKEN_LIFETIME_SECONDS = 65 * 60;
 const MAX_RECEIPT_LIFETIME_MILLISECONDS = 5 * 60_000;
 const CLOCK_SKEW_MILLISECONDS = 60_000;
 const MAX_BODY_BYTES = 64 * 1024;
+const CHALLENGE_BYTES = 32;
+const RECEIPT_ID_BYTES = 18;
 
 const ROOT_FIELDS = new Set([
   "schema",
@@ -73,11 +75,15 @@ const REQUEST_FIELDS = new Set([
   "algorithms",
   "receiptDigest",
   "sourceRevision",
+  "canonicalReceiptStatus",
   "commandPath",
   "requestBytes"
 ]);
 const RECEIPT_FIELDS = new Set([
   "schema",
+  "receiptId",
+  "challenge",
+  "purpose",
   "issuer",
   "audience",
   "subject",
@@ -110,7 +116,14 @@ const TRANSPORT_FIELDS = new Set([
   "maximumRequestBytes",
   "maximumResponseBytes"
 ]);
-const REPLAY_FIELDS = new Set(["nonceStatus", "idempotencyStatus", "rateLimitStatus"]);
+const REPLAY_FIELDS = new Set([
+  "requestChallenge",
+  "observedReceiptId",
+  "challengeStatus",
+  "receiptIdStatus",
+  "idempotencyStatus",
+  "rateLimitStatus"
+]);
 const PROVIDER_FIELDS = new Set([
   "keyProtection",
   "hardwareBacked",
@@ -162,6 +175,16 @@ function assertIdentifier(value, code, label) {
 function assertTimestamp(value, code, label) {
   if (typeof value !== "string" || Number.isNaN(Date.parse(value))) {
     reject(code, `${label} is invalid`);
+  }
+}
+
+function isCanonicalBase64Url(value, expectedBytes) {
+  if (typeof value !== "string" || !/^[A-Za-z0-9_-]+$/u.test(value)) return false;
+  try {
+    const decoded = Buffer.from(value, "base64url");
+    return decoded.byteLength === expectedBytes && decoded.toString("base64url") === value;
+  } catch {
+    return false;
   }
 }
 
@@ -259,6 +282,9 @@ export function validateAssuranceSignerGatewayCase(input) {
     !/^[0-9a-f]{64}$/u.test(input.request.receiptDigest) ||
     !/^[0-9a-f]{40}$/u.test(input.request.sourceRevision) ||
     typeof input.request.commandPath !== "boolean" ||
+    !new Set(["exact", "mismatched", "unparseable", "unknown"]).has(
+      input.request.canonicalReceiptStatus
+    ) ||
     !Number.isSafeInteger(input.request.requestBytes) ||
     input.request.requestBytes < 1 ||
     input.request.requestBytes > MAX_BODY_BYTES
@@ -269,6 +295,7 @@ export function validateAssuranceSignerGatewayCase(input) {
   assertExactFields(input.receipt, RECEIPT_FIELDS, "Assurance receipt");
   for (const field of [
     "schema",
+    "purpose",
     "issuer",
     "audience",
     "subject",
@@ -294,6 +321,8 @@ export function validateAssuranceSignerGatewayCase(input) {
     "Assurance receipt expiry time"
   );
   if (
+    !isCanonicalBase64Url(input.receipt.receiptId, RECEIPT_ID_BYTES) ||
+    !isCanonicalBase64Url(input.receipt.challenge, CHALLENGE_BYTES) ||
     !/^[0-9a-f]{40}$/u.test(input.receipt.sourceRevision) ||
     !/^[0-9a-f]{64}$/u.test(input.receipt.evidenceDigest) ||
     typeof input.receipt.commandPath !== "boolean"
@@ -335,7 +364,14 @@ export function validateAssuranceSignerGatewayCase(input) {
 
   assertExactFields(input.replay, REPLAY_FIELDS, "Assurance signer replay controls");
   if (
-    !new Set(["unique", "replayed", "unknown"]).has(input.replay.nonceStatus) ||
+    !isCanonicalBase64Url(input.replay.requestChallenge, CHALLENGE_BYTES) ||
+    !isCanonicalBase64Url(input.replay.observedReceiptId, RECEIPT_ID_BYTES) ||
+    !new Set(["fresh", "replayed", "mismatched", "malformed", "unknown"]).has(
+      input.replay.challengeStatus
+    ) ||
+    !new Set(["unique", "duplicate", "malformed", "unknown"]).has(
+      input.replay.receiptIdStatus
+    ) ||
     !new Set(["new", "duplicate", "unknown"]).has(input.replay.idempotencyStatus) ||
     !new Set(["within-limit", "exceeded", "unknown"]).has(input.replay.rateLimitStatus)
   ) {
@@ -386,11 +422,14 @@ export function evaluateAssuranceSignerGatewayCase(input) {
   }
   if (!gatewayCase.caller.runtimeIdentityVerified) reasons.push("RUNTIME_IDENTITY_UNVERIFIED");
   if (
-    gatewayCase.request.schema !== "osoix.assurance-signing-request.v1" ||
+    gatewayCase.request.schema !== "osoix.assurance-signing-request.v2" ||
     gatewayCase.request.method !== "POST" ||
     gatewayCase.request.purpose !== "assurance-receipt-signing"
   ) {
     reasons.push("REQUEST_CONTRACT_MISMATCH");
+  }
+  if (gatewayCase.request.canonicalReceiptStatus !== "exact") {
+    reasons.push("CANONICAL_RECEIPT_REJECTED");
   }
   if (
     gatewayCase.request.algorithms.length !== ASSURANCE_SIGNER_ALGORITHMS.length ||
@@ -415,11 +454,21 @@ export function evaluateAssuranceSignerGatewayCase(input) {
     reasons.push("KEY_PURPOSE_MISMATCH");
   }
   if (
-    gatewayCase.receipt.schema !== "osoix.assurance-receipt.v1" ||
+    gatewayCase.receipt.schema !== "osoix.assurance-receipt.v2" ||
+    gatewayCase.receipt.purpose !== "read-only-assurance" ||
     gatewayCase.receipt.audience !== "OSOIX" ||
     gatewayCase.receipt.environment !== "production"
   ) {
     reasons.push("RECEIPT_CONTRACT_MISMATCH");
+  }
+  if (
+    gatewayCase.replay.requestChallenge !== gatewayCase.receipt.challenge ||
+    gatewayCase.replay.challengeStatus !== "fresh"
+  ) {
+    reasons.push("CHALLENGE_BINDING_REJECTED");
+  }
+  if (gatewayCase.replay.observedReceiptId !== gatewayCase.receipt.receiptId) {
+    reasons.push("RECEIPT_ID_BINDING_REJECTED");
   }
   if (
     gatewayCase.request.sourceRevision !== gatewayCase.caller.sourceRevision ||
@@ -452,7 +501,7 @@ export function evaluateAssuranceSignerGatewayCase(input) {
     reasons.push("TRANSPORT_POLICY_REJECTED");
   }
   if (
-    gatewayCase.replay.nonceStatus !== "unique" ||
+    gatewayCase.replay.receiptIdStatus !== "unique" ||
     gatewayCase.replay.idempotencyStatus !== "new" ||
     gatewayCase.replay.rateLimitStatus !== "within-limit"
   ) {

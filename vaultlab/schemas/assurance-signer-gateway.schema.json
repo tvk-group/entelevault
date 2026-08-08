@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://enteleclos.com/schemas/assurance-signer-gateway-case.v1.json",
+  "$id": "https://enteleclos.com/schemas/assurance-signer-gateway-case.v2.json",
   "title": "EnteleVAULT assurance signer gateway conformance case",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "caseId", "observedAt", "environment", "caller", "request", "receipt", "transport", "replay", "provider"],
   "properties": {
-    "schema": { "const": "entelevault.assurance-signer-gateway-case.v1" },
+    "schema": { "const": "entelevault.assurance-signer-gateway-case.v2" },
     "caseId": { "type": "string", "pattern": "^gateway_[0-9a-f]{32}$" },
     "observedAt": { "type": "string", "format": "date-time" },
     "environment": { "const": "staging" },
@@ -31,7 +31,7 @@
     "request": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema", "method", "purpose", "keyPurpose", "algorithms", "receiptDigest", "sourceRevision", "commandPath", "requestBytes"],
+      "required": ["schema", "method", "purpose", "keyPurpose", "algorithms", "receiptDigest", "sourceRevision", "canonicalReceiptStatus", "commandPath", "requestBytes"],
       "properties": {
         "schema": { "type": "string" },
         "method": { "type": "string" },
@@ -40,6 +40,7 @@
         "algorithms": { "type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": { "enum": ["Ed25519", "ML-DSA-65"] } },
         "receiptDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
         "sourceRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "canonicalReceiptStatus": { "enum": ["exact", "mismatched", "unparseable", "unknown"] },
         "commandPath": { "type": "boolean" },
         "requestBytes": { "type": "integer", "minimum": 1, "maximum": 65536 }
       }
@@ -47,9 +48,12 @@
     "receipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema", "issuer", "audience", "subject", "environment", "sourceRevision", "issuedAt", "expiresAt", "policyVersion", "decision", "evidenceDigest", "commandPath", "controls"],
+      "required": ["schema", "receiptId", "challenge", "purpose", "issuer", "audience", "subject", "environment", "sourceRevision", "issuedAt", "expiresAt", "policyVersion", "decision", "evidenceDigest", "commandPath", "controls"],
       "properties": {
         "schema": { "type": "string" },
+        "receiptId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{24}$" },
+        "challenge": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" },
+        "purpose": { "type": "string" },
         "issuer": { "type": "string" },
         "audience": { "type": "string" },
         "subject": { "type": "string" },
@@ -95,9 +99,12 @@
     "replay": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["nonceStatus", "idempotencyStatus", "rateLimitStatus"],
+      "required": ["requestChallenge", "observedReceiptId", "challengeStatus", "receiptIdStatus", "idempotencyStatus", "rateLimitStatus"],
       "properties": {
-        "nonceStatus": { "enum": ["unique", "replayed", "unknown"] },
+        "requestChallenge": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" },
+        "observedReceiptId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{24}$" },
+        "challengeStatus": { "enum": ["fresh", "replayed", "mismatched", "malformed", "unknown"] },
+        "receiptIdStatus": { "enum": ["unique", "duplicate", "malformed", "unknown"] },
         "idempotencyStatus": { "enum": ["new", "duplicate", "unknown"] },
         "rateLimitStatus": { "enum": ["within-limit", "exceeded", "unknown"] }
       }

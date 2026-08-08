@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-12",
+  "catalogId": "ENTELE-VAULTLAB-13",
   "status": "draft",
   "controls": [
     {
@@ -377,13 +377,13 @@
     },
     {
       "id": "VL-ASSURANCE-SIGNER-001",
-      "title": "Assurance signer conformance binds exact Vercel workload identities, source revisions, receipt digests, deny-only decisions, key purposes, algorithms, transport, replay, rate, and provider posture",
+      "title": "Assurance signer v2 conformance binds exact Vercel workload identities, canonical challenges, unique receipt IDs, source revisions, receipt digests, deny-only decisions, key purposes, algorithms, transport, replay, rate, and provider posture",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     },
     {
       "id": "VL-ASSURANCE-SIGNER-002",
-      "title": "Assurance signer conformance rejects arbitrary payload, key, credential, wallet, signature, command, replay, provider-downgrade, and identity-confusion inputs and never grants runtime or signing authority",
+      "title": "Assurance signer v2 conformance rejects v1, malformed or mismatched challenges, duplicate receipt IDs, non-canonical receipts, arbitrary payload, key, credential, wallet, signature, command, replay, provider-downgrade, and identity-confusion inputs and never grants runtime or signing authority",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }
