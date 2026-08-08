@@ -4,7 +4,7 @@ const DECISION = "deny";
 const POLICY_VERSION = "entelevault-synthetic-only-2026.08.08";
 const SOURCE_EVIDENCE = {
   "system": "EnteleVAULT",
-  "runtime": "VaultLab-synthetic-assurance",
+  "runtime": "synthetic-assurance-boundary",
   "productionCustody": false,
   "realKeysAccepted": false,
   "signingAuthority": false,
