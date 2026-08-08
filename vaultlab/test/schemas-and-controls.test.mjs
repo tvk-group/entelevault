@@ -67,7 +67,7 @@ test("control catalog identifiers are unique and every control blocks release", 
     await readFile(new URL("../controls/vaultlab-controls.json", import.meta.url), "utf8")
   );
   const ids = catalog.controls.map((control) => control.id);
-  assert.equal(catalog.catalogId, "ENTELE-VAULTLAB-12");
+  assert.equal(catalog.catalogId, "ENTELE-VAULTLAB-13");
   assert.equal(catalog.controls.length, 64);
   assert.equal(new Set(ids).size, ids.length);
   assert.equal(catalog.controls.every((control) => control.releaseImpact === "blocking"), true);

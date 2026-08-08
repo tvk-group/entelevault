@@ -9,10 +9,16 @@ import {
 } from "../src/assurance-signer-gateway-policy.mjs";
 
 const REVISION = "a".repeat(40);
+const CHALLENGE = Buffer.alloc(32, 0xa1).toString("base64url");
+const OTHER_CHALLENGE = Buffer.alloc(32, 0xb2).toString("base64url");
+const RECEIPT_ID = Buffer.alloc(18, 0xc3).toString("base64url");
 
 function receipt(overrides = {}) {
   const base = {
-    schema: "osoix.assurance-receipt.v1",
+    schema: "osoix.assurance-receipt.v2",
+    receiptId: RECEIPT_ID,
+    challenge: CHALLENGE,
+    purpose: "read-only-assurance",
     issuer: "wallet",
     audience: "OSOIX",
     subject: "entelewallet-production-control-plane",
@@ -64,13 +70,14 @@ function gatewayCase(overrides = {}) {
       runtimeIdentityVerified: true
     },
     request: {
-      schema: "osoix.assurance-signing-request.v1",
+      schema: "osoix.assurance-signing-request.v2",
       method: "POST",
       purpose: "assurance-receipt-signing",
       keyPurpose: "wallet-assurance-receipt",
       algorithms: [...ASSURANCE_SIGNER_ALGORITHMS],
       receiptDigest: digestAssuranceReceipt(baseReceipt),
       sourceRevision: REVISION,
+      canonicalReceiptStatus: "exact",
       commandPath: false,
       requestBytes: 8192
     },
@@ -84,7 +91,10 @@ function gatewayCase(overrides = {}) {
       maximumResponseBytes: 65536
     },
     replay: {
-      nonceStatus: "unique",
+      requestChallenge: CHALLENGE,
+      observedReceiptId: RECEIPT_ID,
+      challengeStatus: "fresh",
+      receiptIdStatus: "unique",
       idempotencyStatus: "new",
       rateLimitStatus: "within-limit"
     },
@@ -181,6 +191,31 @@ test("digest, revision, freshness, decision, and command boundaries fail closed"
   }
 });
 
+test("v1, non-canonical, challenge, receipt ID, and purpose drift fail closed", () => {
+  const cases = [
+    [gatewayCase({ request: { schema: "osoix.assurance-signing-request.v1" } }), "REQUEST_CONTRACT_MISMATCH"],
+    [gatewayCase({ request: { canonicalReceiptStatus: "mismatched" } }), "CANONICAL_RECEIPT_REJECTED"],
+    [gatewayCase({ receipt: { challenge: OTHER_CHALLENGE } }), "CHALLENGE_BINDING_REJECTED"],
+    [gatewayCase({ replay: { requestChallenge: OTHER_CHALLENGE } }), "CHALLENGE_BINDING_REJECTED"],
+    [gatewayCase({ replay: { observedReceiptId: Buffer.alloc(18, 0xd4).toString("base64url") } }), "RECEIPT_ID_BINDING_REJECTED"],
+    [gatewayCase({ receipt: { purpose: "generic-signing" } }), "RECEIPT_CONTRACT_MISMATCH"],
+    [gatewayCase({ replay: { receiptIdStatus: "duplicate" } }), "REPLAY_OR_RATE_POLICY_REJECTED"]
+  ];
+  for (const [candidate, reason] of cases) {
+    const decision = evaluateAssuranceSignerGatewayCase(candidate);
+    assert.equal(decision.recommendation, "BLOCK_SIGNER_GATEWAY_REQUEST");
+    assert.equal(decision.reasonCodes.includes(reason), true);
+  }
+  assert.throws(
+    () => validateAssuranceSignerGatewayCase(gatewayCase({ receipt: { challenge: "not-canonical" } })),
+    (error) => error.code === "ASSURANCE_SIGNER_GATEWAY_RECEIPT_REJECTED"
+  );
+  assert.throws(
+    () => validateAssuranceSignerGatewayCase(gatewayCase({ receipt: { receiptId: "not-canonical" } })),
+    (error) => error.code === "ASSURANCE_SIGNER_GATEWAY_RECEIPT_REJECTED"
+  );
+});
+
 test("generic signing shapes and weakened transport are rejected", () => {
   const cases = [
     [gatewayCase({ request: { method: "GET" } }), "REQUEST_CONTRACT_MISMATCH"],
@@ -198,7 +233,8 @@ test("generic signing shapes and weakened transport are rejected", () => {
 
 test("replay, idempotency, rate, provider, export, and audit failures block review", () => {
   const cases = [
-    gatewayCase({ replay: { nonceStatus: "replayed" } }),
+    gatewayCase({ replay: { challengeStatus: "replayed" } }),
+    gatewayCase({ replay: { receiptIdStatus: "duplicate" } }),
     gatewayCase({ replay: { idempotencyStatus: "duplicate" } }),
     gatewayCase({ replay: { rateLimitStatus: "exceeded" } }),
     gatewayCase({ provider: { keyProtection: "software" } }),

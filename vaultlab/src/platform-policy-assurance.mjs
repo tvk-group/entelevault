@@ -622,7 +622,10 @@ function signerCeremony(overrides = {}) {
 
 function assuranceSignerReceipt(overrides = {}) {
   const base = {
-    schema: "osoix.assurance-receipt.v1",
+    schema: "osoix.assurance-receipt.v2",
+    receiptId: Buffer.alloc(18, 0xc3).toString("base64url"),
+    challenge: Buffer.alloc(32, 0xa1).toString("base64url"),
+    purpose: "read-only-assurance",
     issuer: "wallet",
     audience: "OSOIX",
     subject: "entelewallet-production-control-plane",
@@ -674,13 +677,14 @@ function assuranceSignerGatewayCase(overrides = {}) {
       runtimeIdentityVerified: true
     },
     request: {
-      schema: "osoix.assurance-signing-request.v1",
+      schema: "osoix.assurance-signing-request.v2",
       method: "POST",
       purpose: "assurance-receipt-signing",
       keyPurpose: "wallet-assurance-receipt",
       algorithms: [...ASSURANCE_SIGNER_ALGORITHMS],
       receiptDigest: digestAssuranceReceipt(receipt),
       sourceRevision: "a".repeat(40),
+      canonicalReceiptStatus: "exact",
       commandPath: false,
       requestBytes: 8192
     },
@@ -694,7 +698,10 @@ function assuranceSignerGatewayCase(overrides = {}) {
       maximumResponseBytes: 65536
     },
     replay: {
-      nonceStatus: "unique",
+      requestChallenge: Buffer.alloc(32, 0xa1).toString("base64url"),
+      observedReceiptId: Buffer.alloc(18, 0xc3).toString("base64url"),
+      challengeStatus: "fresh",
+      receiptIdStatus: "unique",
       idempotencyStatus: "new",
       rateLimitStatus: "within-limit"
     },
@@ -1327,8 +1334,21 @@ function assureAssuranceSignerGateway() {
     assuranceSignerGatewayCase({ request: { method: "GET" } }),
     assuranceSignerGatewayCase({ request: { algorithms: ["Ed25519"] } }),
     assuranceSignerGatewayCase({ transport: { trustedSourceVerified: false } }),
-    assuranceSignerGatewayCase({ replay: { nonceStatus: "replayed" } }),
-    assuranceSignerGatewayCase({ provider: { keyProtection: "software" } })
+    assuranceSignerGatewayCase({ replay: { challengeStatus: "replayed" } }),
+    assuranceSignerGatewayCase({ provider: { keyProtection: "software" } }),
+    assuranceSignerGatewayCase({ request: { schema: "osoix.assurance-signing-request.v1" } }),
+    assuranceSignerGatewayCase({ request: { canonicalReceiptStatus: "mismatched" } }),
+    assuranceSignerGatewayCase({
+      receipt: { challenge: Buffer.alloc(32, 0xb2).toString("base64url") }
+    }),
+    assuranceSignerGatewayCase({ receipt: { purpose: "generic-signing" } }),
+    assuranceSignerGatewayCase({
+      replay: { requestChallenge: Buffer.alloc(32, 0xb2).toString("base64url") }
+    }),
+    assuranceSignerGatewayCase({ replay: { receiptIdStatus: "duplicate" } }),
+    assuranceSignerGatewayCase({
+      replay: { observedReceiptId: Buffer.alloc(18, 0xd4).toString("base64url") }
+    })
   ];
   const decisions = cases.map((candidate) => evaluateAssuranceSignerGatewayCase(candidate));
   let prohibitedRejected = false;
@@ -1647,7 +1667,7 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v10",
+    schema: "enteleclos.platform-policy-assurance.v11",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

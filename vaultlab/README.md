@@ -40,7 +40,7 @@ VaultLab is a fail-closed, synthetic and sanitized-metadata-only assurance harne
 - a security-disclosure/bug-bounty governance gate with fourteen mandatory controls and exhaustive 16,384-combination testing;
 - a third-party risk gate with fourteen mandatory controls and exhaustive 16,384-combination testing.
 - a revision-bound consumer release gate for EnteleWALLET and EnteleEXCHANGE CI.
-- a deny-only assurance-signer gateway conformance gate for exact workload identity, purpose, digest, replay, transport, and hardware-provider evidence.
+- a deny-only assurance-signer gateway v2 conformance gate for exact workload identity, canonical challenge, receipt ID, purpose, source revision, digest, replay, transport, and hardware-provider evidence.
 
 ## What it cannot do
 
@@ -61,7 +61,7 @@ npm run policy:assure
 
 `npm run assure` creates a fresh credential and specimen in memory. The report contains control results and a fixture identifier, but no credential or decrypted specimen.
 
-`npm run policy:assure` emits a sanitized twenty-six-gate report spanning wallet, exchange, vault, custody, identity, infrastructure, governance, client integrity, market data, availability, vulnerability remediation, external assessment, privacy, cryptography review, quantum migration, security disclosure, third-party risk, and assurance-signer conformance. It exhaustively evaluates 4,096 combinations each for custody and secret leakage plus 16,384 each for release provenance, ledger integrity, resilience, immutable audit, client integrity, market data, availability, remediation, external assessment, privacy, cryptography review, quantum migration, security disclosure, and third-party risk—237,622 evaluated cases total—and always records `authorityGranted: false`.
+`npm run policy:assure` emits a sanitized twenty-six-gate report spanning wallet, exchange, vault, custody, identity, infrastructure, governance, client integrity, market data, availability, vulnerability remediation, external assessment, privacy, cryptography review, quantum migration, security disclosure, third-party risk, and assurance-signer conformance. It exhaustively evaluates 4,096 combinations each for custody and secret leakage plus 16,384 each for release provenance, ledger integrity, resilience, immutable audit, client integrity, market data, availability, remediation, external assessment, privacy, cryptography review, quantum migration, security disclosure, and third-party risk—237,629 evaluated cases total—and always records `authorityGranted: false`.
 
 Additional gates:
 

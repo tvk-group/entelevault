@@ -7,12 +7,12 @@ test("platform policy assurance emits publishable, authority-free evidence", () 
   assert.equal(report.result, "PASS");
   assert.equal(report.scope, "sanitized-metadata-only");
   assert.equal(report.authorityGranted, false);
-  assert.equal(report.schema, "enteleclos.platform-policy-assurance.v10");
+  assert.equal(report.schema, "enteleclos.platform-policy-assurance.v11");
   assert.deepEqual(report.summary, { passed: 26, failed: 0, total: 26 });
   assert.equal(
     report.checks.find((check) => check.id === "VL-PLATFORM-ASSURANCE-SIGNER-GATEWAY")
       .evaluatedCases,
-    14
+    21
   );
   assert.equal(report.checks.find((check) => check.id === "VL-PLATFORM-CUSTODY").evaluatedCases, 4096);
   assert.equal(
