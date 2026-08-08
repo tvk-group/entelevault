@@ -79,6 +79,8 @@ The v0.10 trust-governance layer makes independent cryptographic approval, respo
 
 The v0.11 production-enforcement layer adds explicit quantum-migration governance and immutable-policy, exact-revision, freshness-bound consumer attestations for EnteleWALLET and EnteleEXCHANGE CI. It blocks release review when policy evidence drifts, but it cannot claim quantum safety, authorize migration, deploy, activate custody, sign, trade, withdraw, or move assets.
 
+The v0.12 signer-boundary layer adds exact caller/project identity, fixed key-purpose, deny-receipt digest, source-revision, freshness, Trusted Sources, replay, rate-limit, transport, and hardware-provider conformance policy. It cannot verify runtime tokens, execute requests, operate a signer, perform cryptography, generate/export keys, deploy, activate custody, sign, trade, withdraw, or move assets.
+
 ## Release metrics
 
 - zero unreviewed custody-path changes;

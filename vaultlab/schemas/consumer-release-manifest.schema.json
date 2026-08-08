@@ -53,8 +53,8 @@
     },
     "requiredChecks": {
       "type": "array",
-      "minItems": 25,
-      "maxItems": 25,
+      "minItems": 26,
+      "maxItems": 26,
       "uniqueItems": true,
       "items": { "type": "string", "pattern": "^VL-PLATFORM-[A-Z-]+$" }
     }

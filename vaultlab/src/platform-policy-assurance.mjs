@@ -57,6 +57,13 @@ import {
   validateSignerCeremonyTransition
 } from "./signer-ceremony-governance.mjs";
 import {
+  ASSURANCE_SIGNER_ALGORITHMS,
+  ASSURANCE_SIGNER_GATEWAY_SCHEMA,
+  digestAssuranceReceipt,
+  evaluateAssuranceSignerGatewayCase,
+  validateAssuranceSignerGatewayCase
+} from "./assurance-signer-gateway-policy.mjs";
+import {
   evaluateResilienceReadiness,
   REQUIRED_RESILIENCE_CONTROLS,
   RESILIENCE_READINESS_SCHEMA
@@ -188,7 +195,8 @@ const AUTHORITY_FIELDS = Object.freeze([
   "credentialIssuanceAuthorized",
   "dataSharingAuthorized",
   "procurementAuthorized",
-  "paymentAuthorized"
+  "paymentAuthorized",
+  "runtimeDeploymentAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -610,6 +618,111 @@ function signerCeremony(overrides = {}) {
     controls: { ...base.controls, ...(overrides.controls ?? {}) },
     findings: { ...base.findings, ...(overrides.findings ?? {}) }
   };
+}
+
+function assuranceSignerReceipt(overrides = {}) {
+  const base = {
+    schema: "osoix.assurance-receipt.v1",
+    issuer: "wallet",
+    audience: "OSOIX",
+    subject: "entelewallet-production-control-plane",
+    environment: "production",
+    sourceRevision: "a".repeat(40),
+    issuedAt: "2026-08-08T09:00:00.000Z",
+    expiresAt: "2026-08-08T09:05:00.000Z",
+    policyVersion: "entelewallet-source-gates-2026.08.08.v2",
+    decision: "deny",
+    evidenceDigest: "b".repeat(64),
+    commandPath: false,
+    controls: {
+      humanQuorum: false,
+      hardwareBackedKeys: false,
+      transactionSimulation: false,
+      destinationPolicy: false,
+      rateLimits: false,
+      recoveryDrillCurrent: false,
+      workloadIdentity: true,
+      productionRevisionBound: true,
+      cryptoInventoryComplete: false
+    }
+  };
+  return {
+    ...base,
+    ...overrides,
+    controls: { ...base.controls, ...(overrides.controls ?? {}) }
+  };
+}
+
+function assuranceSignerGatewayCase(overrides = {}) {
+  const receipt = assuranceSignerReceipt(overrides.receipt);
+  const base = {
+    schema: ASSURANCE_SIGNER_GATEWAY_SCHEMA,
+    caseId: "gateway_0123456789abcdef0123456789abcdef",
+    observedAt: "2026-08-08T09:00:30.000Z",
+    environment: "staging",
+    caller: {
+      issuer: "https://oidc.vercel.com/tvk-group",
+      audience: "https://vercel.com/tvk-group",
+      subject: "owner:tvk-group:project:entelewallet-app:environment:production",
+      owner: "tvk-group",
+      ownerId: "team_MOHi5TFHhsgsCUm8qfCYpnf6",
+      project: "entelewallet-app",
+      projectId: "prj_BzvQEtgeP5oTsWeYxmlhzGMUfwNI",
+      deploymentEnvironment: "production",
+      sourceRevision: "a".repeat(40),
+      tokenLifetimeSeconds: 3600,
+      runtimeIdentityVerified: true
+    },
+    request: {
+      schema: "osoix.assurance-signing-request.v1",
+      method: "POST",
+      purpose: "assurance-receipt-signing",
+      keyPurpose: "wallet-assurance-receipt",
+      algorithms: [...ASSURANCE_SIGNER_ALGORITHMS],
+      receiptDigest: digestAssuranceReceipt(receipt),
+      sourceRevision: "a".repeat(40),
+      commandPath: false,
+      requestBytes: 8192
+    },
+    receipt,
+    transport: {
+      tlsVersion: "TLS1.3",
+      redirectPolicy: "error",
+      contentType: "application/json",
+      trustedSourceVerified: true,
+      maximumRequestBytes: 65536,
+      maximumResponseBytes: 65536
+    },
+    replay: {
+      nonceStatus: "unique",
+      idempotencyStatus: "new",
+      rateLimitStatus: "within-limit"
+    },
+    provider: {
+      keyProtection: "managed-kms",
+      hardwareBacked: true,
+      keyExportPolicy: "prohibited",
+      purposeIsolation: true,
+      auditSinkAvailable: true,
+      independentAssessmentApproved: true,
+      classicalSignatureAvailable: true,
+      postQuantumSignatureAvailable: true
+    }
+  };
+  const candidate = {
+    ...base,
+    ...overrides,
+    caller: { ...base.caller, ...(overrides.caller ?? {}) },
+    request: { ...base.request, ...(overrides.request ?? {}) },
+    receipt,
+    transport: { ...base.transport, ...(overrides.transport ?? {}) },
+    replay: { ...base.replay, ...(overrides.replay ?? {}) },
+    provider: { ...base.provider, ...(overrides.provider ?? {}) }
+  };
+  if (overrides.receipt && !overrides.request?.receiptDigest) {
+    candidate.request.receiptDigest = digestAssuranceReceipt(candidate.receipt);
+  }
+  return candidate;
 }
 
 function resilienceAssessment(controls) {
@@ -1201,6 +1314,39 @@ function assureSignerCeremonyGovernance() {
   return result("VL-PLATFORM-SIGNER-CEREMONY", 4, passed);
 }
 
+function assureAssuranceSignerGateway() {
+  const cases = [
+    assuranceSignerGatewayCase(),
+    assuranceSignerGatewayCase({ caller: { projectId: "prj_wrong" } }),
+    assuranceSignerGatewayCase({ caller: { runtimeIdentityVerified: false } }),
+    assuranceSignerGatewayCase({ request: { keyPurpose: "exchange-assurance-receipt" } }),
+    assuranceSignerGatewayCase({ request: { receiptDigest: "f".repeat(64) } }),
+    assuranceSignerGatewayCase({ request: { sourceRevision: "c".repeat(40) } }),
+    assuranceSignerGatewayCase({ receipt: { decision: "allow" } }),
+    assuranceSignerGatewayCase({ request: { commandPath: true } }),
+    assuranceSignerGatewayCase({ request: { method: "GET" } }),
+    assuranceSignerGatewayCase({ request: { algorithms: ["Ed25519"] } }),
+    assuranceSignerGatewayCase({ transport: { trustedSourceVerified: false } }),
+    assuranceSignerGatewayCase({ replay: { nonceStatus: "replayed" } }),
+    assuranceSignerGatewayCase({ provider: { keyProtection: "software" } })
+  ];
+  const decisions = cases.map((candidate) => evaluateAssuranceSignerGatewayCase(candidate));
+  let prohibitedRejected = false;
+  try {
+    validateAssuranceSignerGatewayCase(
+      assuranceSignerGatewayCase({ privateKey: "prohibited" })
+    );
+  } catch (error) {
+    prohibitedRejected = error?.code === "ASSURANCE_SIGNER_GATEWAY_PROHIBITED_FIELD";
+  }
+  const passed =
+    decisions[0].recommendation === "ELIGIBLE_FOR_SEPARATE_SIGNER_IMPLEMENTATION_REVIEW" &&
+    decisions.slice(1).every((decision) => decision.recommendation === "BLOCK_SIGNER_GATEWAY_REQUEST") &&
+    decisions.every((decision) => !grantsAuthority(decision)) &&
+    prohibitedRejected;
+  return result("VL-PLATFORM-ASSURANCE-SIGNER-GATEWAY", cases.length + 1, passed);
+}
+
 function assureResilienceReadiness() {
   const total = 1 << REQUIRED_RESILIENCE_CONTROLS.length;
   const allEnabled = total - 1;
@@ -1483,6 +1629,7 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureBreakGlassGovernance(),
     assureApiSessionSecurity(),
     assureSignerCeremonyGovernance(),
+    assureAssuranceSignerGateway(),
     assureResilienceReadiness(),
     assureSecretLeakage(),
     assureAuditIntegrity(),
@@ -1500,7 +1647,7 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v9",
+    schema: "enteleclos.platform-policy-assurance.v10",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

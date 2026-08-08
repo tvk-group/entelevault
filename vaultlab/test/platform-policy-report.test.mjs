@@ -7,10 +7,10 @@ function report() {
   return runPlatformPolicyAssurance({ generatedAt: "2026-08-07T00:00:00.000Z" });
 }
 
-test("the complete twenty-five-gate platform report validates", () => {
+test("the complete twenty-six-gate platform report validates", () => {
   const validated = validatePlatformPolicyReport(report());
   assert.equal(validated.result, "PASS");
-  assert.equal(validated.summary.total, 25);
+  assert.equal(validated.summary.total, 26);
   assert.equal(validated.authorityGranted, false);
 });
 
@@ -21,13 +21,13 @@ test("missing, duplicated, renamed, or miscounted platform gates fail closed", (
   missing.checks.pop();
   cases.push(missing);
   const duplicate = structuredClone(base);
-  duplicate.checks[24] = structuredClone(duplicate.checks[23]);
+  duplicate.checks[25] = structuredClone(duplicate.checks[24]);
   cases.push(duplicate);
   const renamed = structuredClone(base);
   renamed.checks[0].id = "VL-PLATFORM-UNKNOWN";
   cases.push(renamed);
   const miscounted = structuredClone(base);
-  miscounted.checks[24].evaluatedCases = 1;
+  miscounted.checks[25].evaluatedCases = 1;
   cases.push(miscounted);
   for (const candidate of cases) assert.throws(() => validatePlatformPolicyReport(candidate));
 });
