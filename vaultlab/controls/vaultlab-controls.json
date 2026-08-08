@@ -1,6 +1,6 @@
 {
   "schema": "enteleclos.control-catalog.v1",
-  "catalogId": "ENTELE-VAULTLAB-9",
+  "catalogId": "ENTELE-VAULTLAB-10",
   "status": "draft",
   "controls": [
     {
@@ -312,6 +312,42 @@
     {
       "id": "VL-PRIVACY-002",
       "title": "Privacy evidence rejects personal data, identifiers, credentials, raw records, and wallet material and cannot access raw data, delete data, mutate retention, grant access, remediate, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-CRYPTO-REVIEW-001",
+      "title": "Cryptography readiness requires all fourteen inventory, primitive, specification, parameter, KDF, randomness, nonce, lifecycle, agility, provenance, side-channel, vector, migration, and independent-review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-CRYPTO-REVIEW-002",
+      "title": "Cryptography evidence rejects keys, entropy, plaintext, ciphertext, credentials, and wallet material and cannot perform cryptography, generate or export keys, migrate, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-DISCLOSURE-001",
+      "title": "Security-disclosure readiness requires all fourteen policy, scope, safe-harbor, channel, privacy, triage, severity, duplicate, reward, legal, emergency, evidence, remediation-tracking, and publication controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-DISCLOSURE-002",
+      "title": "Disclosure evidence rejects reports, exploits, researcher identities, targets, credentials, and wallet material and cannot activate programs, scan, exploit, publish, pay rewards, remediate, deploy, sign, or move assets",
+      "releaseImpact": "blocking",
+      "evidence": "unit-test"
+    },
+    {
+      "id": "VL-THIRDPARTY-001",
+      "title": "Third-party readiness requires all fourteen inventory, criticality, security, privacy, data-flow, access, contract, subprocessor, incident, continuity, concentration, exit, monitoring, and review controls",
+      "releaseImpact": "blocking",
+      "evidence": "exhaustive-unit-test"
+    },
+    {
+      "id": "VL-THIRDPARTY-002",
+      "title": "Third-party evidence rejects vendor identities, contracts, credentials, endpoints, personal data, and wallet material and cannot onboard, contract, issue credentials, share data, grant access, procure, pay, deploy, sign, or move assets",
       "releaseImpact": "blocking",
       "evidence": "unit-test"
     }

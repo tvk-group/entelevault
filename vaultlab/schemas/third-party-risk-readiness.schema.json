@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/third-party-risk-readiness.v1.json",
+  "title": "EnteleCLOS third-party-risk readiness assessment",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "vendorClass", "systemClass", "policyRevision", "dueDiligenceDigest", "dependencyMapDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.third-party-risk-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^thirdparty_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "vendorClass": { "enum": ["cloud-infrastructure", "market-data", "custody-technology", "software-supply-chain"] },
+    "systemClass": { "enum": ["wallet", "exchange", "vault", "security-platform"] },
+    "policyRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "dueDiligenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "dependencyMapDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["vendorInventoryComplete", "criticalityClassified", "securityDueDiligenceComplete", "privacyDueDiligenceComplete", "dataFlowReviewed", "accessScopeMinimized", "contractControlsVerified", "subprocessorVisibilityVerified", "incidentNotificationVerified", "continuityPlanVerified", "concentrationRiskReviewed", "exitPlanVerified", "ongoingMonitoringVerified", "independentRiskReviewComplete"],
+      "properties": {
+        "vendorInventoryComplete": { "type": "boolean" }, "criticalityClassified": { "type": "boolean" },
+        "securityDueDiligenceComplete": { "type": "boolean" }, "privacyDueDiligenceComplete": { "type": "boolean" },
+        "dataFlowReviewed": { "type": "boolean" }, "accessScopeMinimized": { "type": "boolean" },
+        "contractControlsVerified": { "type": "boolean" }, "subprocessorVisibilityVerified": { "type": "boolean" },
+        "incidentNotificationVerified": { "type": "boolean" }, "continuityPlanVerified": { "type": "boolean" },
+        "concentrationRiskReviewed": { "type": "boolean" }, "exitPlanVerified": { "type": "boolean" },
+        "ongoingMonitoringVerified": { "type": "boolean" }, "independentRiskReviewComplete": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "overdueReviews", "concentrationExceptions", "exitPlanGaps"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 }, "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "overdueReviews": { "type": "integer", "minimum": 0, "maximum": 100000 }, "concentrationExceptions": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "exitPlanGaps": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

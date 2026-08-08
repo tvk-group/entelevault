@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/security-disclosure-readiness.v1.json",
+  "title": "EnteleCLOS security-disclosure readiness assessment",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "programClass", "systemClass", "programRevision", "policyDigest", "scopeDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.security-disclosure-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^disclosure_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "programClass": { "enum": ["private-disclosure", "public-bounty", "vendor-coordinated"] },
+    "systemClass": { "enum": ["wallet", "exchange", "vault", "security-platform"] },
+    "programRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "policyDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "scopeDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["publishedPolicyVerified", "scopeRegistryVerified", "safeHarborVerified", "authorizedChannelsVerified", "researcherPrivacyVerified", "triageSlaVerified", "severityMethodVerified", "duplicateHandlingVerified", "rewardPolicyVerified", "legalEscalationPathVerified", "emergencyContactVerified", "evidenceHandlingVerified", "remediationTrackingVerified", "publicDisclosureApprovalVerified"],
+      "properties": {
+        "publishedPolicyVerified": { "type": "boolean" }, "scopeRegistryVerified": { "type": "boolean" },
+        "safeHarborVerified": { "type": "boolean" }, "authorizedChannelsVerified": { "type": "boolean" },
+        "researcherPrivacyVerified": { "type": "boolean" }, "triageSlaVerified": { "type": "boolean" },
+        "severityMethodVerified": { "type": "boolean" }, "duplicateHandlingVerified": { "type": "boolean" },
+        "rewardPolicyVerified": { "type": "boolean" }, "legalEscalationPathVerified": { "type": "boolean" },
+        "emergencyContactVerified": { "type": "boolean" }, "evidenceHandlingVerified": { "type": "boolean" },
+        "remediationTrackingVerified": { "type": "boolean" }, "publicDisclosureApprovalVerified": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policyGaps", "scopeAmbiguities", "overdueTriage", "privacyBreaches", "unresolvedDisputes"],
+      "properties": {
+        "policyGaps": { "type": "integer", "minimum": 0, "maximum": 100000 }, "scopeAmbiguities": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "overdueTriage": { "type": "integer", "minimum": 0, "maximum": 100000 }, "privacyBreaches": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "unresolvedDisputes": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

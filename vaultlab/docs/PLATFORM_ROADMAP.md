@@ -41,6 +41,8 @@ VaultLab v0.8 adds client-integrity, market-data-integrity, and isolated availab
 
 VaultLab v0.9 adds vulnerability-remediation governance, external-assessment readiness, and privacy/data-minimization assurance. It cannot receive vulnerability details, exploits, targets, credentials, personal data, or raw records; and it cannot scan, test, exploit, access data, delete data, deploy patches, or remediate systems.
 
+VaultLab v0.10 adds cryptography-review readiness, security-disclosure/bug-bounty governance, and third-party risk assurance. It cannot receive cryptographic material, vulnerability reports, exploits, targets, researcher or vendor identities, contracts, credentials, endpoints, or personal data; and it cannot operate cryptography, activate testing programs, onboard vendors, grant access, execute contracts/payments, or deploy.
+
 ## Phase 3 — exchange and custody assurance
 
 - hot/warm/cold custody policy with quantitative exposure limits;
@@ -72,6 +74,8 @@ The v0.7 continuous-assurance layer makes sanitized leakage and audit evidence r
 The v0.8 runtime-resilience layer makes client distribution/attestation, market-data quorum/circuit breakers, and availability controls release-blocking. Chaos evidence is accepted only from isolated-test or staging environments. Eligibility remains evidence for independent review, never operational authority.
 
 The v0.9 assessment-governance layer makes remediation SLAs, independently authorized assessment preparation, and privacy minimization release-blocking. Eligibility means only that a separate human review or signed external engagement may begin; it never authorizes testing or operational action.
+
+The v0.10 trust-governance layer makes independent cryptographic approval, responsible-disclosure governance, and critical-provider risk controls release-blocking. Eligibility remains a review state only, never operational or commercial authority.
 
 ## Release metrics
 

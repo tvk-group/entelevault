@@ -107,6 +107,21 @@ import {
   PRIVACY_DATA_MINIMIZATION_SCHEMA,
   REQUIRED_PRIVACY_DATA_MINIMIZATION_CONTROLS
 } from "./privacy-data-minimization-readiness.mjs";
+import {
+  CRYPTOGRAPHY_REVIEW_SCHEMA,
+  evaluateCryptographyReview,
+  REQUIRED_CRYPTOGRAPHY_REVIEW_CONTROLS
+} from "./cryptography-review-readiness.mjs";
+import {
+  evaluateSecurityDisclosure,
+  REQUIRED_SECURITY_DISCLOSURE_CONTROLS,
+  SECURITY_DISCLOSURE_SCHEMA
+} from "./security-disclosure-readiness.mjs";
+import {
+  evaluateThirdPartyRisk,
+  REQUIRED_THIRD_PARTY_RISK_CONTROLS,
+  THIRD_PARTY_RISK_SCHEMA
+} from "./third-party-risk-readiness.mjs";
 
 const AUTHORITY_FIELDS = Object.freeze([
   "executionAuthorized",
@@ -156,7 +171,18 @@ const AUTHORITY_FIELDS = Object.freeze([
   "patchDeploymentAuthorized",
   "rawDataAccessAuthorized",
   "dataDeletionAuthorized",
-  "retentionMutationAuthorized"
+  "retentionMutationAuthorized",
+  "cryptographicOperationAuthorized",
+  "cryptoMigrationAuthorized",
+  "programActivationAuthorized",
+  "publicDisclosureAuthorized",
+  "rewardPaymentAuthorized",
+  "vendorOnboardingAuthorized",
+  "contractExecutionAuthorized",
+  "credentialIssuanceAuthorized",
+  "dataSharingAuthorized",
+  "procurementAuthorized",
+  "paymentAuthorized"
 ]);
 
 function grantsAuthority(decision) {
@@ -814,6 +840,56 @@ function privacyAssessment(controls) {
   };
 }
 
+function cryptographyAssessment(controls) {
+  return {
+    schema: CRYPTOGRAPHY_REVIEW_SCHEMA,
+    assessmentId: "crypto_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-10T00:00:00.000Z",
+    environment: "staging",
+    componentClass: "wallet-vault",
+    designRevision: "a".repeat(40),
+    specificationDigest: "b".repeat(64),
+    threatModelDigest: "c".repeat(64),
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, parameterExceptions: 0, vectorFailures: 0, deprecatedPrimitives: 0 },
+    evidenceDigest: "d".repeat(64)
+  };
+}
+
+function securityDisclosureAssessment(controls) {
+  return {
+    schema: SECURITY_DISCLOSURE_SCHEMA,
+    assessmentId: "disclosure_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-10T00:00:00.000Z",
+    environment: "staging",
+    programClass: "private-disclosure",
+    systemClass: "security-platform",
+    programRevision: "e".repeat(40),
+    policyDigest: "f".repeat(64),
+    scopeDigest: "0".repeat(64),
+    controls,
+    findings: { policyGaps: 0, scopeAmbiguities: 0, overdueTriage: 0, privacyBreaches: 0, unresolvedDisputes: 0 },
+    evidenceDigest: "1".repeat(64)
+  };
+}
+
+function thirdPartyAssessment(controls) {
+  return {
+    schema: THIRD_PARTY_RISK_SCHEMA,
+    assessmentId: "thirdparty_0123456789abcdef0123456789abcdef",
+    assessedAt: "2026-08-10T00:00:00.000Z",
+    environment: "staging",
+    vendorClass: "cloud-infrastructure",
+    systemClass: "exchange",
+    policyRevision: "2".repeat(40),
+    dueDiligenceDigest: "3".repeat(64),
+    dependencyMapDigest: "4".repeat(64),
+    controls,
+    findings: { criticalOpen: 0, highOpen: 0, overdueReviews: 0, concentrationExceptions: 0, exitPlanGaps: 0 },
+    evidenceDigest: "5".repeat(64)
+  };
+}
+
 function result(id, evaluatedCases, passed) {
   return { id, status: passed ? "PASS" : "FAIL", evaluatedCases };
 }
@@ -1287,6 +1363,51 @@ function assurePrivacyDataMinimization() {
   return result("VL-PLATFORM-PRIVACY-MINIMIZATION", total, eligible === 1 && !authorityGranted);
 }
 
+function assureCryptographyReview() {
+  const total = 1 << REQUIRED_CRYPTOGRAPHY_REVIEW_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_CRYPTOGRAPHY_REVIEW_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateCryptographyReview(cryptographyAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_CRYPTOGRAPHY_APPROVAL") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_CRYPTOGRAPHY_APPROVAL")) return result("VL-PLATFORM-CRYPTOGRAPHY-REVIEW", total, false);
+  }
+  return result("VL-PLATFORM-CRYPTOGRAPHY-REVIEW", total, eligible === 1 && !authorityGranted);
+}
+
+function assureSecurityDisclosure() {
+  const total = 1 << REQUIRED_SECURITY_DISCLOSURE_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_SECURITY_DISCLOSURE_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateSecurityDisclosure(securityDisclosureAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_SEPARATE_DISCLOSURE_PROGRAM_APPROVAL") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_SEPARATE_DISCLOSURE_PROGRAM_APPROVAL")) return result("VL-PLATFORM-SECURITY-DISCLOSURE", total, false);
+  }
+  return result("VL-PLATFORM-SECURITY-DISCLOSURE", total, eligible === 1 && !authorityGranted);
+}
+
+function assureThirdPartyRisk() {
+  const total = 1 << REQUIRED_THIRD_PARTY_RISK_CONTROLS.length;
+  const allEnabled = total - 1;
+  let eligible = 0;
+  let authorityGranted = false;
+  for (let mask = 0; mask < total; mask += 1) {
+    const controls = Object.fromEntries(REQUIRED_THIRD_PARTY_RISK_CONTROLS.map((control, index) => [control, Boolean(mask & (1 << index))]));
+    const decision = evaluateThirdPartyRisk(thirdPartyAssessment(controls));
+    if (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_THIRD_PARTY_REVIEW") eligible += 1;
+    if (grantsAuthority(decision)) authorityGranted = true;
+    if ((mask === allEnabled) !== (decision.readiness === "ELIGIBLE_FOR_INDEPENDENT_THIRD_PARTY_REVIEW")) return result("VL-PLATFORM-THIRD-PARTY-RISK", total, false);
+  }
+  return result("VL-PLATFORM-THIRD-PARTY-RISK", total, eligible === 1 && !authorityGranted);
+}
+
 export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOString() } = {}) {
   if (typeof generatedAt !== "string" || Number.isNaN(Date.parse(generatedAt))) {
     throw new TypeError("generatedAt must be an ISO-compatible date-time");
@@ -1312,11 +1433,14 @@ export function runPlatformPolicyAssurance({ generatedAt = new Date().toISOStrin
     assureAvailabilityReadiness(),
     assureVulnerabilityRemediation(),
     assureExternalAssessment(),
-    assurePrivacyDataMinimization()
+    assurePrivacyDataMinimization(),
+    assureCryptographyReview(),
+    assureSecurityDisclosure(),
+    assureThirdPartyRisk()
   ];
   const passed = checks.filter((check) => check.status === "PASS").length;
   return {
-    schema: "enteleclos.platform-policy-assurance.v7",
+    schema: "enteleclos.platform-policy-assurance.v8",
     generatedAt,
     scope: "sanitized-metadata-only",
     result: passed === checks.length ? "PASS" : "FAIL",

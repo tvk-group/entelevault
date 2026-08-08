@@ -9,6 +9,7 @@ const schemaFiles = [
   "availability-chaos-readiness.schema.json",
   "break-glass-governance.schema.json",
   "custody-readiness.schema.json",
+  "cryptography-review-readiness.schema.json",
   "client-integrity-readiness.schema.json",
   "evidence-envelope.schema.json",
   "external-assessment-readiness.schema.json",
@@ -22,11 +23,13 @@ const schemaFiles = [
   "resilience-readiness.schema.json",
   "release-provenance.schema.json",
   "security-event.schema.json",
+  "security-disclosure-readiness.schema.json",
   "security-exception-governance.schema.json",
   "secret-leakage-assurance.schema.json",
   "signing-intent.schema.json",
   "signer-ceremony-governance.schema.json",
   "synthetic-artifact.schema.json",
+  "third-party-risk-readiness.schema.json",
   "vulnerability-remediation-readiness.schema.json",
   "withdrawal-risk.schema.json"
 ];
@@ -61,8 +64,8 @@ test("control catalog identifiers are unique and every control blocks release", 
     await readFile(new URL("../controls/vaultlab-controls.json", import.meta.url), "utf8")
   );
   const ids = catalog.controls.map((control) => control.id);
-  assert.equal(catalog.catalogId, "ENTELE-VAULTLAB-9");
-  assert.equal(catalog.controls.length, 52);
+  assert.equal(catalog.catalogId, "ENTELE-VAULTLAB-10");
+  assert.equal(catalog.controls.length, 58);
   assert.equal(new Set(ids).size, ids.length);
   assert.equal(catalog.controls.every((control) => control.releaseImpact === "blocking"), true);
   assert.deepEqual(catalog.baselineMappings, [

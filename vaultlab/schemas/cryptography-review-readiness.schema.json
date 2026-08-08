@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://enteleclos.com/schemas/cryptography-review-readiness.v1.json",
+  "title": "EnteleCLOS cryptography-review readiness assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "assessmentId", "assessedAt", "environment", "componentClass", "designRevision", "specificationDigest", "threatModelDigest", "controls", "findings", "evidenceDigest"],
+  "properties": {
+    "schema": { "const": "enteleclos.cryptography-review-readiness.v1" },
+    "assessmentId": { "type": "string", "pattern": "^crypto_[0-9a-f]{32}$" },
+    "assessedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["staging", "production-observation"] },
+    "componentClass": { "enum": ["wallet-vault", "exchange-custody", "authentication-service", "evidence-service"] },
+    "designRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "specificationDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "threatModelDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["algorithmInventoryComplete", "approvedPrimitivesVerified", "protocolSpecificationReviewed", "parameterPolicyVerified", "kdfPolicyVerified", "randomnessSourceVerified", "nonceManagementVerified", "cryptographicMaterialLifecycleReviewed", "cryptoAgilityPlanVerified", "libraryProvenanceVerified", "sideChannelReviewComplete", "interoperabilityVectorsVerified", "migrationRollbackPlanVerified", "independentCryptographyReviewComplete"],
+      "properties": {
+        "algorithmInventoryComplete": { "type": "boolean" }, "approvedPrimitivesVerified": { "type": "boolean" },
+        "protocolSpecificationReviewed": { "type": "boolean" }, "parameterPolicyVerified": { "type": "boolean" },
+        "kdfPolicyVerified": { "type": "boolean" }, "randomnessSourceVerified": { "type": "boolean" },
+        "nonceManagementVerified": { "type": "boolean" }, "cryptographicMaterialLifecycleReviewed": { "type": "boolean" },
+        "cryptoAgilityPlanVerified": { "type": "boolean" }, "libraryProvenanceVerified": { "type": "boolean" },
+        "sideChannelReviewComplete": { "type": "boolean" }, "interoperabilityVectorsVerified": { "type": "boolean" },
+        "migrationRollbackPlanVerified": { "type": "boolean" }, "independentCryptographyReviewComplete": { "type": "boolean" }
+      }
+    },
+    "findings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["criticalOpen", "highOpen", "parameterExceptions", "vectorFailures", "deprecatedPrimitives"],
+      "properties": {
+        "criticalOpen": { "type": "integer", "minimum": 0, "maximum": 100000 }, "highOpen": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "parameterExceptions": { "type": "integer", "minimum": 0, "maximum": 100000 }, "vectorFailures": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "deprecatedPrimitives": { "type": "integer", "minimum": 0, "maximum": 100000 }
+      }
+    },
+    "evidenceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}
