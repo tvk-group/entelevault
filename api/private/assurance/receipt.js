@@ -1,3 +1,11 @@
+import {
+  CHALLENGE_BYTES,
+  RECEIPT_ID_BYTES,
+  isCanonicalBase64Url,
+  newReceiptId,
+  validSourceRevision,
+} from './assurance-receipt-contract.mjs';
+
 const RECEIPT_CONFIG = Object.freeze({
   issuer: 'custody',
   subject: 'entelevault-vaultlab-production-boundary',
@@ -58,7 +66,7 @@ function getRuntimeIdentity(req) {
     workloadToken &&
     Buffer.byteLength(workloadToken, 'utf8') <= MAX_TOKEN_BYTES &&
     environment === 'production' &&
-    /^[a-f0-9]{40}$/i.test(sourceRevision) &&
+    validSourceRevision(sourceRevision) &&
     repositoryOwner === EXPECTED_REPOSITORY.owner &&
     repositoryName === EXPECTED_REPOSITORY.name &&
     sourceRef === EXPECTED_REPOSITORY.ref,
@@ -281,16 +289,6 @@ async function authenticateOsoix(req) {
   }
 }
 
-function isCanonicalBase64Url(value, expectedBytes) {
-  if (typeof value !== 'string' || !/^[A-Za-z0-9_-]+$/.test(value)) return false;
-  try {
-    const decoded = Buffer.from(value, 'base64url');
-    return decoded.byteLength === expectedBytes && decoded.toString('base64url') === value;
-  } catch {
-    return false;
-  }
-}
-
 function validIdentifier(value) {
   return typeof value === 'string' && /^[A-Za-z0-9._:/-]{1,128}$/.test(value);
 }
@@ -313,7 +311,7 @@ async function signReceipt(receipt, runtimeIdentity) {
       'X-OSOIX-Purpose': 'assurance-receipt-signing',
     },
     body: JSON.stringify({
-      schema: 'osoix.assurance-signing-request.v1',
+      schema: 'osoix.assurance-signing-request.v2',
       keyPurpose: `${RECEIPT_CONFIG.issuer}-assurance-receipt`,
       algorithms: ['Ed25519', 'ML-DSA-65'],
       receiptDigest,
@@ -363,7 +361,7 @@ function setResponseHeaders(res) {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Vary', 'Authorization, x-osoix-purpose');
+  res.setHeader('Vary', 'Authorization, x-osoix-purpose, x-osoix-challenge');
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 }
 
@@ -372,6 +370,14 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({ status: 'blocked', commandPath: false });
+  }
+  const challenge = headerValue(req, 'x-osoix-challenge');
+  if (!isCanonicalBase64Url(challenge, CHALLENGE_BYTES)) {
+    return res.status(400).json({
+      status: 'blocked',
+      reason: 'invalid_challenge',
+      commandPath: false,
+    });
   }
   if (!(await authenticateOsoix(req))) {
     return res.status(401).json({ status: 'blocked', commandPath: false });
@@ -393,7 +399,10 @@ export default async function handler(req, res) {
     deployment: runtimeIdentity.evidence,
   };
   const receipt = {
-    schema: 'osoix.assurance-receipt.v1',
+    schema: 'osoix.assurance-receipt.v2',
+    receiptId: newReceiptId(),
+    challenge,
+    purpose: 'read-only-assurance',
     issuer: RECEIPT_CONFIG.issuer,
     audience: 'OSOIX',
     subject: RECEIPT_CONFIG.subject,
