@@ -4,7 +4,7 @@ EnteleVAULT is the security and privacy vault layer for the EnteleKRON ecosystem
 
 ## Current status
 
-This repository is an early product and assurance foundation. It is not yet a production cryptocurrency custodian, wallet, HSM, MPC signer, password-recovery service, or audited secret-storage product. Do not store production keys, seeds, customer wallet files, recovery phrases, or regulated records in the current implementation.
+This repository is an early product and assurance foundation. It is not yet a production cryptocurrency custodian, wallet, HSM, MPC signer, password-recovery service, reserve manager, treasury operator, prime broker, or audited secret-storage product. Planned TVKUSD, EnteleMINT, EnteleTREASURY, custody, tokenization, and prime-service controls remain readiness architecture only. Do not store production keys, seeds, customer wallet files, recovery phrases, or regulated records in the current implementation.
 
 ## VaultLab
 
@@ -66,7 +66,7 @@ See:
 - [Evidence contract](./vaultlab/docs/EVIDENCE_CONTRACT.md)
 - [Signing-intent guard](./vaultlab/docs/SIGNING_INTENT_GUARD.md)
 - [Recovery governance](./vaultlab/docs/RECOVERY_GOVERNANCE.md)
-- [Native-custody readiness](./vaultlab/docs/NATIVE_CUSTODY_READINESS.md)
+- [Native-custody readiness](./vaultlab/docs/NATIVE_CUSTODY_READINESS.md)\n- [TVKUSD reserve and custody boundary](./vaultlab/docs/TVKUSD_RESERVE_AND_CUSTODY_BOUNDARY.md)
 - [Exchange withdrawal policy guard](./vaultlab/docs/WITHDRAWAL_POLICY_GUARD.md)
 - [Release provenance gate](./vaultlab/docs/RELEASE_PROVENANCE_GATE.md)
 - [Incident governance](./vaultlab/docs/INCIDENT_GOVERNANCE.md)
