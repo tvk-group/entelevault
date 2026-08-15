@@ -1,0 +1,8 @@
+{
+  "entity": "EnteleBANK LTD",
+  "canonicalUrl": "https://www.entelebank.com",
+  "relationship": "EnteleVAULT is a separate TVK Group ecosystem security technology project. Its capabilities may be evaluated for future use by EnteleBANK only after appropriate governance, security, resilience, legal and regulatory review.",
+  "bankStatus": "EnteleBANK is a proposed UK banking institution in pre-authorisation development and is not currently authorised by the PRA or FCA to accept deposits or provide regulated banking services.",
+  "boundary": "EnteleVAULT is not a bank, does not itself provide an EnteleBANK customer account or deposit product, and does not create FSCS protection or regulatory approval.",
+  "futureIntegration": "Any future use by EnteleBANK must preserve clear accountability, access governance, auditability, recovery planning, supplier oversight and separation between technology services and regulated banking responsibilities."
+}
